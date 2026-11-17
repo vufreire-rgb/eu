@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vinicius Freire — Draw My Life</title>
+<meta name="description" content="Minha trajetória, desenhada à mão: resiliência, brio e criatividade antes da inteligência artificial.">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111;--paper:#fff;--m:#D49A00;--soft:#555;--line:#e6e6e6;
+ --hand:"Caveat","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+ --sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow:hidden;
+ -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button,a{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--m);outline-offset:3px;border-radius:6px}
+
+#app{position:fixed;inset:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+/* ---------- topo ---------- */
+#top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px 4px;min-height:48px;z-index:5}
+#brand{font-family:var(--hand);font-weight:700;font-size:22px;line-height:1;position:relative;white-space:nowrap}
+#brand::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:var(--m);border-radius:3px;transform:rotate(-1deg)}
+#tools{display:flex;gap:6px}
+.pill{font-size:12.5px;font-weight:500;padding:6px 11px;border:1.5px solid var(--ink);border-radius:999px;background:#fff;line-height:1;white-space:nowrap;transition:background .2s,color .2s}
+.pill[aria-pressed=true],.pill[aria-expanded=true]{background:var(--ink);color:#fff}
+.pill:hover{background:#f6f6f6}.pill[aria-pressed=true]:hover,.pill[aria-expanded=true]:hover{background:var(--ink)}
+
+/* ---------- palco ---------- */
+#stage{flex:1;position:relative;overflow:hidden;touch-action:pan-y;--enter:36px;--leave:-36px}
+#stage::before{content:"";position:absolute;inset:-20px;pointer-events:none;
+ background:radial-gradient(circle at 12% 18%,rgba(212,154,0,.07) 0 3px,transparent 4px),
+            radial-gradient(circle at 88% 70%,rgba(0,0,0,.05) 0 2px,transparent 3px);
+ background-size:140px 140px,190px 190px;transform:translate3d(var(--bx,0),var(--by,0),0)}
+.slide{position:absolute;inset:0;display:grid;grid-template-rows:auto auto;align-content:center;gap:10px;padding:0 14px 6px;
+ opacity:0;visibility:hidden;transform:translateX(var(--enter));
+ transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1),visibility 0s .55s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.slide.out{transform:translateX(var(--leave))}
+.art{min-height:0;display:flex;align-items:center;justify-content:center;width:100%;max-width:640px;margin:0 auto;aspect-ratio:4/3;max-height:52svh}
+.art svg{width:100%;height:100%;max-height:100%;overflow:visible;transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .25s ease-out}
+.txt{width:100%;max-width:640px;margin:0 auto;text-align:center;padding:0 6px 4px}
+.kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--m);font-weight:600;margin-bottom:6px}
+.main{font-family:var(--hand);font-weight:700;font-size:clamp(28px,7.9vw,54px);line-height:1.02;text-wrap:balance}
+.main.quote{font-size:clamp(32px,9.4vw,60px)}
+.impact{font-family:var(--hand);font-weight:700;font-size:clamp(21px,5.6vw,30px);line-height:1.1;margin-top:10px;
+ background:linear-gradient(transparent 62%,rgba(212,154,0,.38) 62% 92%,transparent 92%);display:inline;padding:0 4px;
+ -webkit-box-decoration-break:clone;box-decoration-break:clone}
+.sub{font-size:14.5px;color:var(--soft);margin-top:10px;line-height:1.45}
+.w{display:inline-block;white-space:nowrap}
+.c{display:inline-block}
+.sub,.impact,.btns{opacity:0}
+.active .sub,.active .impact,.active .btns{animation:fadein .8s ease forwards;animation-delay:var(--dl,1.4s)}
+.out .sub,.out .impact,.out .btns{opacity:1}
+.c{opacity:0;transform:translateY(5px) rotate(-2deg)}
+.active .c{animation:ink .4s ease forwards;animation-delay:calc(var(--d) * 1ms)}
+.out .c{opacity:1;transform:none}
+@keyframes ink{to{opacity:1;transform:none}}
+@keyframes fadein{to{opacity:1}}
+
+/* ---------- ilustrações ---------- */
+.art svg *{fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.art svg .m{stroke:var(--m)}
+.art svg .fm{fill:var(--m);fill-opacity:.88;stroke:var(--m)}
+.art svg .fw{fill:#fff}
+.art svg .t{fill:var(--ink);stroke:none;font-family:var(--hand);font-weight:700;text-anchor:middle}
+.art svg .t.mu{fill:var(--m)}
+.art svg .t.l{text-anchor:start}
+.art svg .t tspan{fill:var(--ink);stroke:none}
+.art svg .t.mu tspan{fill:var(--m)}
+.art .d{stroke-dasharray:1 1.6;stroke-dashoffset:1.03}
+.art .f{opacity:0}
+.active .art .d{animation:draw var(--t,1s) cubic-bezier(.5,0,.3,1) forwards;animation-delay:var(--dl,.2s)}
+.active .art .f{animation:fadein .6s ease forwards;animation-delay:var(--dl,.2s)}
+.out .art .d{stroke-dashoffset:0}
+.out .art .f{opacity:1}
+@keyframes draw{to{stroke-dashoffset:0}}
+.art g[filter]{will-change:auto}
+html.lite .art g[filter]{filter:none}
+.bob{transform-box:fill-box;transform-origin:center}
+.active .bob{animation:bob 3.4s ease-in-out infinite;animation-delay:calc(var(--k,0) * -.7s)}
+@keyframes bob{50%{transform:translateY(-5px) rotate(2deg)}}
+.spin{transform-box:fill-box;transform-origin:center}
+.active .spin{animation:spin 16s linear infinite}
+.active .spin.r{animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vn{opacity:0}
+.active .vn{animation:vn 6s ease-in-out infinite;animation-delay:calc(var(--k) * 1.1s)}
+@keyframes vn{0%{opacity:0;transform:translateY(8px)}18%,55%{opacity:1;transform:none}80%,100%{opacity:0;transform:translateY(-8px)}}
+.blink{opacity:0}
+.active .blink{animation:blink 2.2s ease-in-out infinite;animation-delay:2.2s}
+@keyframes blink{50%{opacity:1}}
+
+/* ---------- narração ---------- */
+#drawer{position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));max-height:46svh;background:#fff;z-index:4;
+ border:2.5px solid var(--ink);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.08);
+ transform:translateY(120%);transition:transform .45s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#drawer header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--m);font-weight:600}
+#drawer header button{font-size:20px;line-height:1;color:var(--ink);padding:2px 6px}
+#narr{overflow:auto;padding:4px 20px 18px;max-width:680px;margin:0 auto;width:100%}
+#narr p{font-size:16.5px;line-height:1.55;margin:0 0 .75em;color:#222;transition:opacity .3s,background .3s}
+#narr p.say{background:linear-gradient(transparent 60%,rgba(212,154,0,.3) 60%)}
+#narr p.q{font-family:var(--hand);font-weight:700;font-size:26px;line-height:1.15;text-align:center;color:var(--ink)}
+@supports (animation-timeline:view()){
+ #narr p{animation:pin linear both;animation-timeline:view(block);animation-range:entry 0% entry 70%}
+ @keyframes pin{from{opacity:.15;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+
+/* ---------- rodapé: a linha da trajetória ---------- */
+#bar{display:flex;align-items:center;gap:6px;padding:2px 10px calc(8px + env(safe-area-inset-bottom));z-index:5}
+.nav{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;background:#fff;flex:none;transition:transform .15s,opacity .2s}
+.nav:active{transform:scale(.92)}
+.nav:disabled{opacity:.25;cursor:default}
+.nav svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#trailWrap{position:relative;flex:1;height:46px}
+#trail{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#trail path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#trailBg{stroke:#d9d9d9;stroke-width:2}
+#trailFg{stroke:var(--ink);stroke-width:2.6;stroke-dasharray:1 1.6;transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+#pen{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--m);box-shadow:0 0 0 3px #fff;
+ transition:left .9s cubic-bezier(.4,0,.2,1),top .9s cubic-bezier(.4,0,.2,1)}
+#count{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-family:var(--hand);font-weight:700;font-size:17px;background:#fff;padding:0 8px;line-height:1}
+
+/* ---------- finale ---------- */
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+.btn{display:inline-flex;align-items:center;font-size:13.5px;font-weight:500;padding:9px 15px;border:1.8px solid var(--ink);border-radius:999px;background:#fff;text-decoration:none;line-height:1;transition:transform .15s,background .2s}
+.btn:hover{background:#f6f6f6;transform:translateY(-1px) rotate(-.6deg)}
+.btn.pri{background:var(--ink);color:#fff}
+.btn.pri:hover{background:#222}
+.btn[data-pending]{border-style:dashed}
+.btn[data-pending]::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--m);margin-left:8px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,20px);background:var(--ink);color:#fff;font-size:13px;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s;z-index:20;max-width:88vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- desktop ---------- */
+@media (min-width:900px) and (min-height:560px){
+ .slide{grid-template-rows:none;grid-template-columns:1.2fr 1fr;align-items:center;align-content:normal;gap:40px;padding:0 6vw 10px}
+ .art{max-width:none;height:min(100%,560px);aspect-ratio:auto;max-height:none}
+ .txt{text-align:left;max-width:none;align-self:center}
+ .btns{justify-content:flex-start}
+ .main{font-size:clamp(40px,4.4vw,64px)}
+ .main.quote{font-size:clamp(42px,4.8vw,70px)}
+ .sub{font-size:16px}
+ #bar{max-width:900px;margin:0 auto;width:100%}
+ #drawer{left:50%;right:auto;width:min(720px,92vw);transform:translate(-50%,120%);max-height:50svh}
+ #drawer.open{transform:translate(-50%,0)}
+}
+@media (max-height:640px) and (max-width:899px){
+ .main{font-size:clamp(26px,7vw,40px)}.sub{margin-top:6px;font-size:13px}.kicker{margin-bottom:3px}
+}
+
+/* ---------- movimento reduzido ---------- */
+html.rm *,html.rm *::before,html.rm *::after{animation:none!important;transition:none!important}
+html.rm .art .d{stroke-dashoffset:0}
+html.rm .art .f,html.rm .art .vn,html.rm .c,html.rm .sub,html.rm .impact,html.rm .btns{opacity:1}
+html.rm .c{transform:none}
+html.rm #narr p{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+  <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4" xChannelSelector="R" yChannelSelector="G"/>
+ </filter>
+</svg>
+
+<div id="app">
+ <div id="top">
+  <div id="brand">Vinicius Freire</div>
+  <div id="tools">
+   <button class="pill" id="bAuto" aria-pressed="false">▶ Auto</button>
+   <button class="pill" id="bVoice" aria-pressed="false" hidden>Voz</button>
+   <button class="pill" id="bNarr" aria-expanded="false" aria-controls="drawer">Narração</button>
+  </div>
+ </div>
+
+ <main id="stage"></main>
+
+ <section id="drawer" aria-label="Narração" role="region">
+  <header><span>Narração · legenda</span><button id="bClose" aria-label="Fechar narração">×</button></header>
+  <div id="narr"></div>
+ </section>
+
+ <footer id="bar">
+  <button class="nav" id="prev" aria-label="Slide anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div id="trailWrap" role="progressbar" aria-valuemin="1" aria-valuemax="22" aria-valuenow="1" aria-label="Progresso da história">
+   <svg id="trail" viewBox="0 0 1000 46" preserveAspectRatio="none" aria-hidden="true"><path id="trailBg"/><path id="trailFg" pathLength="1"/></svg>
+   <i id="pen"></i><span id="count">01 / 22</span>
+  </div>
+  <button class="nav" id="next" aria-label="Próximo slide"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+ </footer>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO — links do slide final.
+   Deixe vazio ('') enquanto não houver o endereço real. Nada é inventado:
+   botão sem link mostra um aviso ao ser tocado.
+   ===================================================================== */
+const LINKS = {
+  projetos:  '',   // ex.: 'https://...'
+  curriculo: '',   // ex.: 'curriculo.pdf'
+  contato:   '',   // ex.: 'mailto:...'
+  github:    '',   // ex.: 'https://github.com/...'
+  linkedin:  ''    // ex.: 'https://www.linkedin.com/in/...'
+};
+
+/* ---------------------- helpers de desenho ---------------------- */
+const UP='M0 -47 L-13 -63 M0 -47 L13 -63';
+const person=(x,y,s=1,o={})=>{
+  const arms=o.arms||'M0 -47 L-13 -33 M0 -47 L13 -33';
+  const hair=o.hair===false?'':`<path class="m" d="M-8 -68 Q-3 -79 4 -72 Q10 -71 9 -65"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})" style="stroke-width:${(2.6/s).toFixed(2)}px"><circle cx="0" cy="-62" r="9"/>${hair}<path d="M0 -53 L0 -25"/><path d="${arms}"/><path d="${o.legs||'M0 -25 L-9 0 M0 -25 L9 0'}"/>${o.extra||''}</g>`;
+};
+const ground=(y=250)=>`<path class="d" d="M16 ${y} C90 ${y-4} 150 ${y+4} 220 ${y} S340 ${y-3} 384 ${y+1}"/>`;
+const T=(x,y,s,sz=16,cls='')=>`<text class="t f ${cls}" x="${x}" y="${y}" font-size="${sz}">${s}</text>`;
+const TL=(x,y,lines,sz=12,lh=1.15,cls='')=>`<text class="t f ${cls}" x="${x}" y="${y}" font-size="${sz}">${lines.map((l,i)=>`<tspan x="${x}" dy="${i?sz*lh:0}">${l}</tspan>`).join('')}</text>`;
+const gear=(cx,cy,r,n,ph=0,cls='d')=>{
+  const h=r*.24,pts=[];
+  for(let i=0;i<n;i++){const a=ph+i*2*Math.PI/n,w=Math.PI/n;
+    [[r-h,a-w*.8],[r,a-w*.42],[r,a+w*.42],[r-h,a+w*.8]].forEach(([q,t])=>pts.push((cx+q*Math.cos(t)).toFixed(1)+' '+(cy+q*Math.sin(t)).toFixed(1)));}
+  return `<path class="${cls}" d="M${pts.join('L')}Z"/><circle class="d ${cls.includes('m')?'m':''}" cx="${cx}" cy="${cy}" r="${(r*.26).toFixed(1)}"/>`;
+};
+const arrow=(d,hx,hy,ang=0,cls='d m')=>`<path class="${cls}" d="${d}"/><path class="${cls}" d="M${hx-9} ${hy-8} L${hx} ${hy} L${hx-9} ${hy+8}" transform="rotate(${ang} ${hx} ${hy})"/>`;
+
+/* ---------------------- as 22 ilustrações ---------------------- */
+const ART={};
+ART[1]=()=>`<path id="morph" class="d" style="--t:1.8s;stroke-width:3.2"/>
+<path class="d m" d="M96 272 Q200 284 306 270" style="--t:1.2s"/>
+<g class="f" style="--dl:2s"><circle id="dot0" cx="168" cy="292" r="4"/><circle id="dot1" cx="189" cy="292" r="4"/><circle id="dot2" cx="211" cy="292" r="4"/><circle id="dot3" cx="232" cy="292" r="4"/></g>`;
+
+ART[2]=()=>ground()+`
+<path class="d" d="M48 250 V166 L112 114 L176 166 V250"/>
+<path class="d m" d="M36 174 L112 106 L188 174"/>
+<path class="d" d="M144 138 V112 H160 V150"/>
+<path class="d" d="M96 250 V206 H124 V250"/>
+<rect class="d" x="138" y="186" width="24" height="24"/><path class="d" d="M150 186 V210 M138 198 H162"/>
+<circle class="d m" cx="352" cy="46" r="17"/>
+${person(212,250,.55,{arms:UP})}${person(240,250,.46,{arms:UP})}${person(270,250,.62,{arms:UP})}${person(300,250,.5,{arms:UP})}
+${person(343,250,.82,{arms:'M0 -47 L-12 -34 M0 -47 L14 -30',extra:'<rect x="12" y="-32" width="12" height="9"/>'})}
+${person(375,250,.74,{hair:false})}
+${T(112,284,'1999',26,'mu')}`;
+
+ART[3]=()=>ground()+`
+${person(78,250,1,{arms:'M0 -47 L14 -42 M0 -47 L15 -34'})}
+<rect class="d" x="118" y="226" width="54" height="18" rx="5"/><circle class="d" cx="132" cy="246" r="6"/><circle class="d" cx="158" cy="246" r="6"/>
+<g class="bob" style="--k:0"><circle class="d" cx="236" cy="104" r="34"/><circle class="d" cx="236" cy="104" r="6"/><path class="d" d="M236 70V138M202 104H270M212 80L260 128M260 80L212 128"/></g>
+<g class="bob" style="--k:1">${gear(318,84,25,8,0,'d m')}</g>
+<g class="bob" style="--k:2">${gear(312,166,17,6,.2)}</g>
+<g class="bob" style="--k:3"><path class="d" d="M150 52 l12 8 l-24 9 l24 9 l-24 9 l12 8"/></g>
+<g class="bob" style="--k:4"><path class="d" d="M178 160 l12 -7 l12 7 v14 l-12 7 l-12 -7z"/></g>
+<path class="d m" d="M106 196 L132 152 M118 200 L168 168 M96 190 L100 140"/>
+${T(46,110,'?',64,'mu')}`;
+
+ART[4]=()=>ground()+`
+<path class="d" d="M24 36 H376"/>
+<path class="d" d="M40 36 V50 M110 36 V50 M170 36 V50 M240 36 V50 M310 36 V50"/>
+<path class="d" d="M40 52 L100 52 L100 70 L40 62Z"/><path class="d" d="M46 62 l5 8 l5 -8 l5 8 l5 -8 l5 8 l5 -8 l5 8"/>
+<path class="d" d="M170 52 V100"/><rect class="d" x="156" y="52" width="30" height="14"/>
+<path class="d" d="M240 52 V110 H282"/>
+<path class="d" d="M310 52 V104 M302 104 H318"/>
+<rect class="d" x="140" y="188" width="196" height="14" rx="2"/><path class="d" d="M156 202 V250 M320 202 V250"/>
+<rect class="d" x="170" y="168" width="112" height="20"/>
+<path class="d m" d="M296 182 q10 -16 20 -2 q-8 8 -14 0 M318 178 q8 -12 16 -2"/>
+${person(246,250,1.1,{arms:'M0 -47 L-16 -35 L-30 -26'})}
+${person(82,250,.74)}
+<path class="d" d="M138 92 q8 -14 20 -4" style="display:none"/>`;
+
+ART[5]=()=>ground()+`
+${person(255,250,1.12,{arms:'M0 -47 L-18 -38 L-42 -40 M0 -47 L14 -34'})}
+${person(110,250,.82,{arms:'M0 -47 L18 -40 L38 -42 M0 -47 L-12 -34'})}
+<g transform="rotate(-8 190 150)"><rect class="d fw" x="148" y="136" width="86" height="16" rx="2"/><path class="d" d="M158 144 H226"/></g>
+<path class="d m" d="M148 176 q-6 28 -2 52 M158 170 q-6 20 -4 40"/>
+<path class="d" d="M168 244 H232" style="display:none"/>
+<rect class="d" x="156" y="224" width="86" height="16" rx="2" transform="rotate(5 199 232)"/>
+<path class="d m" d="M120 70 q10 -16 24 -6 M278 74 q8 -10 18 -4"/>`;
+
+ART[6]=()=>`
+<path class="d" d="M24 168 H376"/>
+${[80,200,320].map((x,i)=>`<circle class="d fw" cx="${x}" cy="168" r="${12}"/><circle class="f fm" cx="${x}" cy="168" r="5" style="--dl:${1.2+i*.5}s"/>`).join('')}
+${T(80,128,'11',46)}${T(200,128,'14',46)}${T(320,128,'16',46,'mu')}
+<path class="d" d="M52 244 L82 214 M64 206 l24 24 l-10 10 l-24 -24z"/><path class="d" d="M102 224 l-16 16"/>
+<circle class="d m" cx="190" cy="232" r="14"/><circle class="d m" cx="212" cy="242" r="14"/><path class="d" d="M190 226 v12 M184 232 h12"/>
+<path class="d" d="M286 238 L312 226 L330 232 M356 238 L334 226 L318 232 L312 228"/><path class="d m" d="M306 232 q12 14 26 0"/>
+${TL(80,282,['aprender'],15)}${TL(200,282,['trabalhar'],15)}${TL(320,282,['dividir resultados'],15)}`;
+
+ART[7]=()=>ground()+`
+<rect class="d" x="24" y="60" width="124" height="94" rx="6"/><path class="d" d="M86 154 V176 M62 176 H110"/>
+<path class="d" d="M52 130 L52 90 L82 76 L112 90 L112 130 L82 144Z"/><path class="d m" d="M52 90 L82 104 L112 90 M82 104 V144"/>
+<path class="d" d="M20 176 H152 V184 H20Z"/>
+${person(206,250,1,{arms:'M0 -47 L-14 -36 L-26 -30 M0 -47 L14 -36 L26 -30'})}
+<path class="d" d="M180 214 H230 M186 214 V250 M224 214 V250"/>
+<path class="d" d="M268 184 Q316 168 340 188 Q362 168 380 184 V240 Q362 226 340 240 Q316 226 268 240Z"/><path class="d" d="M340 188 V240"/>
+<path class="d m" d="M290 200 h34 M290 212 h30 M352 200 h20 M352 212 h24"/>
+<path class="d m" d="M236 120 C270 80 320 80 350 110 M338 96 l14 15 l-20 6" />
+<circle class="d" cx="250" cy="48" r="16"/><path class="d" d="M250 38 V50 L258 54"/>`;
+
+ART[8]=()=>ground()+`
+<path class="d" d="M30 250 V120 H210 V250"/><path class="d m" d="M20 130 H220 L204 96 H36Z"/>
+<path class="d" d="M30 120 V96"/>
+<path class="d" d="M60 250 V170 L96 160 V250"/><path class="d" d="M96 160 L124 170 V250" />
+<rect class="d fw" x="124" y="168" width="64" height="30" rx="3"/>
+${TL(156,188,['MARCENARIA'],12,1.1)}
+${person(80,250,.9,{arms:'M0 -47 L-14 -34 M0 -47 L16 -50 L26 -62'})}
+<rect class="d fw" x="258" y="76" width="106" height="140" rx="6" transform="rotate(4 311 146)"/>
+<g transform="rotate(4 311 146)"><path class="d" d="M274 100 H348 M274 120 H348 M274 140 H330"/><path class="d m" d="M276 188 q12 -22 22 -4 t20 -2 t24 -4"/><circle class="d" cx="300" cy="170" r="0.1" style="display:none"/></g>
+<path class="d m" d="M246 226 L262 196 L270 200 L254 230Z"/>
+${T(200,284,'a primeira carteira assinada foi a do meu funcionário',13)}`;
+
+ART[9]=()=>{
+ const items=[
+  ['boletos',62,56,'<rect class="d" x="-24" y="-18" width="48" height="36" rx="2"/><path class="d m" d="M-16 -8 H16 M-16 2 H8 M-16 10 v-2 M-12 10 v-2 M-8 10 v-2 M-4 10 v-2 M2 10 v-2"/>'],
+  ['aluguel',200,40,'<path class="d" d="M-22 12 V-6 L0 -22 L22 -6 V12Z"/><path class="d m" d="M-5 12 V0 H5 V12"/>'],
+  ['relógios',338,56,'<circle class="d" cx="0" cy="0" r="20"/><path class="d m" d="M0 0 V-12 M0 0 L9 6"/>'],
+  ['funcionários',50,200,'<circle class="d" cx="-9" cy="-10" r="7"/><circle class="d" cx="11" cy="-8" r="6"/><path class="d" d="M-22 14 q0 -16 13 -16 q13 0 13 16 M4 14 q2 -12 10 -12 q10 0 10 12"/>'],
+  ['clientes',350,204,'<circle class="d" cx="0" cy="-12" r="8"/><path class="d" d="M-16 16 q0 -18 16 -18 q16 0 16 18Z"/><path class="d m" d="M-4 -26 q4 -8 12 -2"/>'],
+  ['fornecedores',200,278,'<rect class="d" x="-24" y="-14" width="30" height="24"/><path class="d" d="M6 -6 H18 L26 2 V10 H6"/><circle class="d" cx="-12" cy="12" r="5"/><circle class="d" cx="16" cy="12" r="5"/>'],
+  ['máquinas',348,128,'<rect class="d" x="-22" y="-8" width="44" height="22" rx="2"/><path class="d m" d="M-12 -8 V-22 H12 V-8"/><path class="d" d="M-12 14 v6 M12 14 v6"/>']
+ ];
+ return items.map(([n,x,y,svg],i)=>`<g class="bob" style="--k:${i}"><g transform="translate(${x} ${y})">${svg}</g></g>${T(x,y+(y>230?40:38),n,14.5)}`).join('')
+  + `<path class="d" d="M118 84 L168 136 M200 74 V104 M312 82 L238 134 M82 192 L158 168 M316 204 L242 176 M200 244 V206 M326 130 L246 148" style="--t:1.4s"/>`
+  + person(200,214,1.15,{arms:'M0 -47 L-14 -62 M0 -47 L14 -62'})
+  + `<path class="d m" d="M178 128 q-6 8 0 14 M226 126 q8 6 2 16"/>`;
+};
+
+ART[10]=()=>{
+ const L=[['Lean','Manufacturing'],['Metodologia','5S'],['Análise','SWOT'],['DRE'],['Centros de','custos'],['Gestão de','pessoas'],['Técnicas','de vendas'],['SEO'],['Planilhas'],['Desenho','técnico']];
+ let s=`<rect class="d" x="168" y="138" width="64" height="12" rx="2"/><path class="d" d="M176 150 V176 M224 150 V176"/><rect class="d m" x="184" y="124" width="32" height="14"/>`;
+ L.forEach((ln,i)=>{const a=i*36*Math.PI/180,x=200+135*Math.sin(a),y=150-108*Math.cos(a);
+  const ux=Math.sin(a)*135,uy=-Math.cos(a)*108;
+  s+=`<path class="d ${i%3==0?'m':''}" d="M${(200+ux*.3).toFixed(0)} ${(150+uy*.34).toFixed(0)} L${(200+ux*.66).toFixed(0)} ${(150+uy*.66).toFixed(0)}" style="--t:.6s"/>`;
+  s+=TL(x.toFixed(0),(y-(ln.length-1)*6+3).toFixed(0),ln,14,1.05);});
+ return s;
+};
+
+ART[11]=()=>{
+ let g='';for(let r=0;r<4;r++)for(let c=0;c<4;c++)g+=`<rect class="d" x="${20+c*38}" y="${70+r*30}" width="38" height="30"/>`;
+ let fill='';[0,5,10,15,6,9,3,12].forEach((k,i)=>{const r=Math.floor(k/4),c=k%4;fill+=`<rect class="f fm" x="${22+c*38}" y="${72+r*30}" width="34" height="26" style="--dl:${1.4+i*.18}s"/>`});
+ return g+fill+`<path class="d m" d="M180 130 H216 M206 118 L220 130 L206 142" style="--dl:2.4s"/>
+<rect class="d" x="232" y="64" width="150" height="130" rx="8" style="--dl:2.6s"/><path class="d" d="M232 86 H382" style="--dl:2.8s"/><circle class="f" cx="246" cy="75" r="3" style="--dl:3s"/><circle class="f fm" cx="258" cy="75" r="3" style="--dl:3s"/>
+${T(310,150,'{ }',50,'mu')}
+${T(300,184,'&lt;/&gt;',22)}
+<path class="d" d="M244 100 H290 M244 114 H270" style="--dl:3.1s"/>
+${T(80,230,'=SOMA( )',20,'mu')}
+<path class="d m" d="M20 246 Q200 262 380 244" style="--dl:3.6s"/>`;
+};
+
+ART[12]=()=>`
+<circle class="d" cx="66" cy="70" r="42"/><path class="d" d="M66 70 V40 M66 70 L90 84"/><path class="d m" d="M66 22 V28 M66 112 V118 M24 70 H30 M102 70 H108"/>
+<path class="d m" d="M70 142 q-26 10 -34 -16 M130 40 l-12 -14 M132 56 l-22 -6" style="display:none"/>
+<path class="d m" d="M200 36 A32 32 0 1 0 208 100 A26 26 0 1 1 200 36Z"/>
+<path class="d" d="M262 44 v10 M257 49 h10 M312 76 v8 M308 80 h8 M170 112 v8 M166 116 h8"/>
+${[0,1,2,3,4,5].map(i=>`<rect class="d" x="${36+(i%2)*4}" y="${236-i*13}" width="102" height="11" rx="1" transform="rotate(${(i%3-1)*(1+i*.5)} 88 ${241-i*13})"/>`).join('')}
+${person(160,250,.7,{arms:'M0 -47 L-10 -33 M0 -47 L10 -33'})}
+<path class="d" d="M250 250 V170 L316 130 L382 170 V250"/><path class="d m" d="M240 176 L316 122 L392 176"/>
+<rect class="d" x="272" y="186" width="88" height="64"/>${[0,1,2,3,4,5].map(i=>`<path class="d" d="M272 ${195+i*10} H360"/>`).join('')}
+<path class="d fw" d="M298 160 h36 v12 h-36z"/>${T(316,171,'fechado',10)}
+<path class="d m" d="M322 214 v-8 a6 6 0 0 1 12 0 v8"/>`;
+
+ART[13]=()=>`
+<path class="d" d="M8 244 C70 244 110 242 168 242"/><path class="d" d="M8 262 C70 262 110 260 160 260"/>
+<rect class="d" x="172" y="168" width="52" height="82" rx="3"/><path class="d" d="M172 196 H224 M172 224 H224 M198 168 V196 M186 196 V224 M210 196 V224 M198 224 V250"/>
+<path class="d m" d="M130 240 C150 160 214 118 282 142 S352 214 392 226" style="--t:1.6s;--dl:1.2s"/>
+<path class="d m" d="M376 210 L394 226 L370 236" style="--dl:2.7s"/>
+${person(110,248,.95,{arms:'M0 -47 L14 -60 M0 -47 L-10 -33'})}
+<path class="d" d="M42 244 V190 M26 190 H64 L74 200 L64 210 H26Z" /><path class="d m" d="M34 200 H58" />
+${T(300,100,'recalculando…',20,'mu')}`;
+
+ART[14]=()=>{
+ let boxes='';[[30,200,-18],[70,226,12],[48,150,22],[100,190,-8],[26,110,-30],[96,128,10],[70,84,-14]].forEach(([x,y,r],i)=>boxes+=`<rect class="d" x="${x}" y="${y}" width="34" height="28" transform="rotate(${r} ${x+17} ${y+14})"/>`);
+ let grid='';for(let r=0;r<4;r++)for(let c=0;c<3;c++)grid+=`<rect class="d" x="${148+c*36}" y="${96+r*28}" width="36" height="28"/>`;
+ let fill='';[0,4,8,11,5,2].forEach((k,i)=>{const r=Math.floor(k/3),c=k%3;fill+=`<rect class="f fm" x="${150+c*36}" y="${98+r*28}" width="32" height="24" style="--dl:${1.6+i*.2}s"/>`});
+ let shelf='';[110,170,230].forEach((y,i)=>{shelf+=`<path class="d" d="M280 ${y} H386"/>`;for(let k=0;k<3;k++)shelf+=`<rect class="d ${(i+k)%3==0?'m':''}" x="${288+k*34}" y="${y-28}" width="30" height="28" style="--dl:${2.2+i*.2}s"/>`});
+ return boxes+`<path class="d m" d="M138 150 H148 M130 142 L140 150 L130 158" style="--dl:1.2s"/>`+grid+fill+`<path class="d m" d="M262 150 H278 M270 142 L280 150 L270 158" style="--dl:2s"/>`+shelf+T(200,64,'estoque',22)+T(200,254,'planilha',20,'mu');
+};
+
+ART[15]=()=>{
+ let cal=`<rect class="d" x="214" y="76" width="168" height="120" rx="3"/>`;
+ for(let c=1;c<6;c++)cal+=`<path class="d" d="M${214+c*28} 76 V196" style="--t:.5s"/>`;
+ for(let r=1;r<5;r++)cal+=`<path class="d" d="M214 ${76+r*24} H382" style="--t:.5s"/>`;
+ for(let i=0;i<14;i++){const x=214+(i%6)*28,y=76+Math.floor(i/6)*24;
+  cal+=`<path class="d m" d="M${x+6} ${y+5} L${x+22} ${y+19} M${x+22} ${y+5} L${x+6} ${y+19}" style="--t:.35s"/>`;}
+ const bx=214+1*28,by=76+2*24;
+ return `<rect class="d" x="24" y="96" width="150" height="104"/><path class="d" d="M24 148 H174 M84 96 V200 M120 148 V200"/><rect class="f fm" x="26" y="98" width="56" height="48" style="--dl:1.6s"/><rect class="f fm" x="122" y="150" width="50" height="48" style="--dl:1.9s"/>`
+ +`<path class="d" d="M36 236 L70 224 M58 224 l10 6" />`+cal
+ +`<circle class="d" cx="${bx+14}" cy="${by+12}" r="18" style="--dl:2.8s"/>`
+ +T(298,60,'30 dias',24)+T(298,236,'14',44,'mu')+TL(100,64,['plano de corte'],19)
+ +`<path class="d m" d="M240 214 H290" style="display:none"/>`;
+};
+
+ART[16]=()=>ground(252)+`
+<path class="d" d="M26 252 V232 H98 V252 M32 232 L36 214 H92 L96 232"/><path class="d m" d="M40 224 H88 M44 218 H84"/>
+${person(60,252,.7,{arms:'M0 -47 L14 -40 L24 -34'})}
+${arrow('M112 190 H132',134,190,0)}
+<rect class="d" x="140" y="150" width="86" height="62" rx="4"/><path class="d" d="M183 212 V232 M160 232 H206"/><path class="d m" d="M154 168 H212 M154 180 H196 M154 192 H206"/>
+${arrow('M232 190 H252',254,190,0)}
+<rect class="d" x="262" y="226" width="116" height="22"/><path class="d" d="M270 248 V252 M370 248 V252"/>
+<path class="d" d="M274 226 V150 H366 V226"/><path class="d" d="M274 150 H366"/><rect class="d" x="308" y="150" width="20" height="16"/><path class="d" d="M318 166 V190"/>
+<path class="d m" d="M290 220 H350" />
+${T(60,284,'papel',15)}${T(183,284,'software',15)}${T(320,284,'máquina',15)}
+<path class="d m" d="M100 70 l14 -18 l14 18 M100 70 H128" style="display:none"/>`;
+
+ART[17]=()=>`
+<rect class="d" x="30" y="28" width="340" height="170" rx="10"/><path class="d" d="M30 54 H370"/><circle class="d" cx="48" cy="41" r="4"/><circle class="d m" cx="64" cy="41" r="4"/><circle class="d" cx="80" cy="41" r="4"/>
+<path class="d" d="M110 54 V198"/><path class="d" d="M46 72 H96 M46 90 H88 M46 108 H96"/>
+${[0,1,2].map(i=>`<rect class="d" x="128" y="${68+i*38}" width="14" height="14" rx="2"/><path class="d m" d="M131 ${75+i*38} l4 4 l7 -9"/><path class="d" d="M156 ${72+i*38} H250 M156 ${84+i*38} H220"/>`).join('')}
+<path class="d m" d="M262 150 q10 -34 20 -6 t18 4 t22 -8 t16 2"/>
+<path class="d" d="M262 164 H348"/>${T(305,184,'assinatura digital',12)}
+<rect class="d" x="262" y="68" width="100" height="56" rx="5"/><path class="d" d="M274 84 H346 M274 98 H330 M274 112 H318"/>
+${['Padrão','Revisão','Assinatura','Aprovado'].map((t,i)=>`<rect class="d ${i==3?'m':''}" x="${34+i*88}" y="226" width="76" height="34" rx="17" style="--dl:${2+i*.35}s"/>${T(72+i*88,248,t,15)}`).join('')}
+${[0,1,2].map(i=>arrow(`M${112+i*88} 243 H${120+i*88}`,`${124+i*88}`,243,0,'d m')).join('')}`;
+
+ART[18]=()=>{
+ const c=[[56,70,'<rect class="d" x="-18" y="-14" width="36" height="28"/><path class="d" d="M-18 0 H18 M0 -14 V14"/>'],
+  [344,70,'<path class="d" d="M-16 12 L4 -12 M-2 -16 L12 -2 L8 2 L-6 -12Z"/>'],
+  [48,196,'<path class="d" d="M-18 -14 H4 Q18 -14 18 -4 V14 H-6 Q-18 14 -18 4Z"/><path class="d m" d="M-8 -4 H8 M-8 4 H4"/>'],
+  [352,196,'<circle class="d" r="16"/><path class="d m" d="M0 0 V-9 M0 0 L7 4"/>'],
+  [200,266,'<path class="d" d="M-20 12 V-6 L0 -22 L20 -6 V12Z"/><path class="d m" d="M-5 12 V0 H5 V12"/>']];
+ let s=c.map(([x,y,v],i)=>`<g class="bob" style="--k:${i}"><g transform="translate(${x} ${y})">${v}</g></g><path class="d" d="M${x} ${y} L200 150" style="--dl:${1.1+i*.15}s;--t:.7s"/>`).join('');
+ s+=`<rect class="d fw" x="150" y="118" width="100" height="66" rx="6"/><path class="d" d="M200 184 V206 M170 206 H230"/>`;
+ s+=`<g class="f" style="--dl:2.2s"><path class="m" d="M200 130 q3 14 18 18 q-15 4 -18 18 q-3 -14 -18 -18 q15 -4 18 -18Z" style="fill:var(--m)"/></g>`;
+ s+=`<g class="d m" style="--dl:2.6s"><path d="M120 100 L84 84 M280 100 L318 84 M130 210 L88 226 M270 210 L312 226"/></g>`;
+ s+=`<path class="d m" d="M60 120 Q130 40 200 110 M340 120 Q270 40 200 110" style="--dl:3s;--t:1.4s"/>`;
+ return s;
+};
+
+ART[19]=()=>{
+ const cards=[
+  [10,8,'Medde',['orçamentos para','pintores'],'<rect class="d" x="-14" y="-16" width="22" height="12" rx="2"/><path class="d" d="M8 -10 H16 V2 H0 V8 M0 8 V16"/><path class="d m" d="M-14 -4 L-10 -4"/>'],
+  [205,8,'Etiquetas',['automação de','etiquetas comerciais'],'<path class="d" d="M-16 -4 L-2 -18 H14 V-2 L0 12Z"/><circle class="d m" cx="8" cy="-10" r="2.5"/>'],
+  [10,108,'Condomínio',['sistema de gestão','condominial'],'<rect class="d" x="-14" y="-18" width="28" height="36"/><path class="d m" d="M-8 -10 h5 M3 -10 h5 M-8 0 h5 M3 0 h5 M-3 18 V8 h6 V18"/>'],
+  [205,108,'Padrões',['operacionais e','assinaturas digitais'],'<rect class="d" x="-14" y="-18" width="28" height="36" rx="2"/><path class="d" d="M-8 -9 H8 M-8 -2 H4"/><path class="d m" d="M-8 10 q4 -8 8 0 t8 -2"/>'],
+  [107.5,208,'Processos',['soluções de','automação'],'GEAR']
+ ];
+ return cards.map(([x,y,t,sub,ic],i)=>{
+  const icon=ic==='GEAR'?gear(0,0,17,8,0,'d m'):ic;
+  return `<rect class="d" x="${x}" y="${y}" width="185" height="84" rx="12" style="--dl:${.2+i*.45}s"/>
+  <g class="f" style="--dl:${.6+i*.45}s"><g transform="translate(${x+36} ${y+42})">${icon}</g>
+  <text class="t l" x="${x+70}" y="${y+34}" font-size="22">${t}</text>${TL(x+70,y+54,sub,12.5,1.2).replace('class="t f "','class="t l f"')}</g>`;}).join('');
+};
+
+ART[20]=()=>`
+<path class="d" d="M10 74 Q70 54 130 74 T250 74 T390 74"/>
+<g class="vn" style="--k:0"><rect x="40" y="26" width="32" height="24" rx="3"/><path d="M48 58 H64"/></g>
+<g class="vn" style="--k:1"><path d="M120 50 L140 20 L160 50Z"/></g>
+<g class="vn" style="--k:2"><circle cx="212" cy="36" r="14"/><circle cx="212" cy="36" r="3"/></g>
+<g class="vn" style="--k:3"><text class="t" x="276" y="46" font-size="30">&lt;/&gt;</text></g>
+<g class="vn" style="--k:4"><rect x="332" y="22" width="26" height="30" rx="4"/><path d="M338 32 H352 M338 40 H348"/></g>
+<g class="spin">${gear(124,172,44,9,0,'d')}</g>
+<g class="spin r">${gear(204,172,44,9,Math.PI/9,'d m')}</g>
+<g class="spin">${gear(284,172,44,9,0,'d')}</g>
+${T(124,252,'resiliência',20)}${T(204,252,'brio',20,'mu')}${T(284,252,'criatividade',20)}
+<path class="d m" d="M60 276 H340" style="--dl:2.4s"/>`;
+
+ART[21]=()=>`
+<path class="d" d="M8 250 C50 248 70 252 100 250" style="--t:.8s"/>
+<path class="d" d="M8 262 C40 262 70 264 96 262" style="--t:.8s"/>
+${person(128,250,1.2,{arms:'M0 -47 L-10 -33 M0 -47 L22 -52',extra:'<path class="m" d="M22 -52 L38 -70"/>'})}
+<rect class="d" x="196" y="40" width="180" height="214" rx="3" style="--dl:.8s"/>
+<rect class="d" x="204" y="48" width="180" height="214" rx="3" style="--dl:1.1s;opacity:.35"/>
+<path class="d m" d="M222 126 q14 -30 28 0 t28 0 t28 -2" style="--dl:2.4s;--t:1.4s"/>
+<g class="blink"><path class="m" d="M222 126 v-4"/></g>
+${T(286,224,'…',34)}`;
+
+ART[22]=()=>{
+ const rs=`<path class="d" d="M26 168 H64 Q82 168 82 150 V112"/><path class="d m" d="M68 124 L82 108 L96 124"/>`;
+ const brio=`<path class="d" d="M168 118 L184 94 H216 L232 118 L200 168Z"/><path class="d m" d="M168 118 H232 M184 94 L192 118 L200 94 L208 118 L216 94 M192 118 L200 168 L208 118"/>`;
+ const cri=`<path class="d" d="M312 150 q-26 -14 -22 -42 q4 -26 34 -26 q30 0 34 26 q4 28 -22 42Z"/><path class="d" d="M312 158 H336 M316 168 H332"/><path class="d m" d="M324 82 V64 M290 90 L278 78 M358 90 L370 78 M278 118 H266 M382 118 H370" />`;
+ return `<path class="d m" d="M30 44 C110 6 150 70 230 38 S340 28 372 46" style="--t:1.4s"/>`+rs+brio+cri+T(62,206,'resiliência',22)+T(200,206,'brio',22,'mu')+T(324,206,'criatividade',22)+
+ `<path class="d" d="M110 252 q40 -12 90 0 t90 -4" style="--dl:2s"/>`;
+};
+
+/* ---------------------- o roteiro ---------------------- */
+const S=[
+{k:'Prólogo',main:['Antes de aprender a programar,','aprendi a resolver.'],sub:'Vinicius Freire — Minha trajetória.',
+ n:['Minha história com a tecnologia começou muito antes de eu escrever minha primeira linha de código. Na verdade, começou quando eu ainda era uma criança tentando entender como o mundo funcionava.']},
+{k:'Raízes',t:'1999: Onde tudo começou',main:['1999. Uma família.','Quatro irmãos.'],
+ n:['Nasci em 1999, em uma família de classe média baixa, com mais três irmãos. Meus pais passavam grande parte do tempo trabalhando. Essa realidade nos ensinou, desde muito cedo, a sermos independentes e a encontrar nossas próprias soluções.']},
+{k:'Raízes',t:'A curiosidade sempre falou mais alto',main:['Por que isso funciona?'],
+ n:['Desde criança, sempre fui muito curioso. Desmontava brinquedos, bicicletas e praticamente tudo que pudesse. Não bastava saber que alguma coisa funcionava. Eu precisava entender por quê.','Essa curiosidade nunca desapareceu. Apenas encontrou problemas cada vez maiores para resolver.']},
+{k:'Ofício',t:'Minha primeira escola foi uma marcenaria',main:['11 anos.','Minha primeira escola prática.'],
+ n:['Aos 11 anos, comecei a frequentar uma marcenaria. Não porque precisava trabalhar, mas porque queria aprender.','Ali descobri que resolver problemas exigia atenção, paciência, criatividade e disposição para tentar novamente quando algo não dava certo.']},
+{k:'Ofício',t:'Uma frase para a vida',cls:'quote',main:['“Homem não põe a mão','se não for resolver.”'],
+ n:['Certa vez, meu padrinho me pediu para segurar uma peça enquanto ele a cortava. A peça escapou das minhas mãos porque me faltou força.','Naquele momento, ele me disse uma frase que nunca mais esqueci.',{q:'Homem não põe a mão se não for resolver.'},'Com o passar dos anos, entendi que aquela frase representava algo muito maior do que uma tarefa de marcenaria. Representava responsabilidade sobre aquilo que eu decidia assumir.']},
+{k:'Ofício',t:'De aprendiz a parceiro',main:['11 — Aprender.','14 — Trabalhar.','16 — Participar dos resultados.'],
+ n:['Aos 14 anos, comecei a trabalhar de fato e a ganhar meus primeiros trocados.','Como já tinha três anos de experiência prática, consegui evoluir rapidamente.','Aos 16, já não recebia um salário fixo. Participava diretamente dos resultados das vendas, como uma espécie de sócio informal.','Começava a entender a relação entre conhecimento, responsabilidade e geração de valor.']},
+{k:'Ofício',t:'Minha dificuldade nunca foi aprender. Foi esperar.',main:['Aprender no meu','próprio ritmo.'],
+ n:['Nessa mesma época, iniciei um curso de design gráfico na escola Advanced.','Tive contato com SketchUp, CorelDRAW e conceitos básicos de design.','Mas descobri que gostava muito mais de testar e desenvolver do que de esperar pela próxima aula.','Enquanto o curso seguia seu cronograma, eu praticava em casa e aprendia sozinho os conteúdos seguintes.','Acabei não concluindo o curso, mas desenvolvi algo que me acompanharia durante toda a vida: a capacidade de aprender de forma autodidata.']},
+{k:'Gestão',t:'Empresário aos 17 anos',main:['Aos 17 anos, abri','minha primeira empresa.'],impact:'Assinei a carteira de um funcionário antes de ter a minha assinada.',
+ n:['Depois de juntar dinheiro, decidi alçar meus próprios voos.','Aos 17 anos, abri uma marcenaria.','Estava assinando a carteira de trabalho de um funcionário sem nunca ter tido a minha assinada.','Cheio de expectativas, acreditava que meu conhecimento de marcenaria seria suficiente para administrar uma empresa.','Eu estava errado.']},
+{k:'Gestão',t:'Descobri que não sabia quase nada',main:['Conhecer o produto não significa','saber administrar o negócio.'],
+ n:['De repente, eu precisava lidar com funcionários, aluguel, fornecedores, vendas, organização, gestão financeira e responsabilidades que nunca havia enfrentado.','Percebi que dominar um ofício era completamente diferente de administrar uma empresa.','Mas havia uma frase que continuava comigo.',{q:'Homem não põe a mão se não for resolver.'},'Então comecei a estudar.']},
+{k:'Gestão',t:'A necessidade me ensinou a aprender',main:['Cada problema exigia','um novo conhecimento.'],
+ n:['Comecei a estudar metodologias de gestão, organização, produção, vendas e finanças.','Não estudava apenas para acumular conhecimento.','Estudava porque precisava resolver problemas reais, que tinham consequências reais.','Cada conceito aprendido era uma nova ferramenta para melhorar minha empresa.']},
+{k:'Automação',t:'Meu primeiro encontro com a programação',main:['E se o trabalho pudesse','ser automatizado?'],
+ n:['Foi através das planilhas que descobri minha afinidade com automação.','Comecei a criar soluções para reduzir trabalhos repetitivos, organizar informações e melhorar processos.','Cheguei a estudar programação através do Curso em Vídeo, no YouTube.','Foi meu primeiro contato com lógica de programação e linguagens de desenvolvimento.','Naquele momento, as responsabilidades da empresa não me permitiram aprofundar esse conhecimento.','Mas a ideia permaneceu.']},
+{k:'Resiliência',t:'O preço de não saber parar',main:['Nem toda batalha','precisa continuar.'],
+ n:['Foram anos extremamente difíceis.','Trabalhei até meu limite, praticamente sem folgas, tentando conciliar as responsabilidades da empresa com uma busca incessante por conhecimento.','Meu corpo e minha mente chegaram ao esgotamento.','Decidi fechar minha empresa.','Doeu. Mas foi necessário.','Hoje, considero aquele período um dos mais valiosos da minha vida. Não pelo dinheiro que ganhei, mas pelo profissional que comecei a me tornar.','Como um diamante que ganha forma durante a lapidação, aqueles anos transformaram minha maneira de pensar.']},
+{k:'Resiliência',t:'Resiliência também é mudar de direção',main:['Recalcular a rota','não é desistir.'],
+ n:['Depois de fechar minha empresa, decidi experimentar novas áreas.','Trabalhei nos segmentos de mármores e esquadrias de alumínio, passando a atuar em funções mais administrativas.','Comecei a aplicar e aprimorar os conhecimentos de gestão e organização que havia desenvolvido anteriormente.','Aprendi que resiliência não significa insistir eternamente no mesmo caminho.','Significa preservar a capacidade de seguir em frente, mesmo quando é necessário mudar de direção.']},
+{k:'Automação',t:'Meu primeiro sistema de estoque',main:['Uma planilha pode ser','muito mais do que uma planilha.'],
+ n:['Na Projesul, empresa de esquadrias de alumínio em Taubaté, identifiquei uma oportunidade de melhorar o controle de estoque.','Utilizando planilhas, desenvolvi um sistema automatizado para organizar esse processo.','Foi uma demonstração de que minha capacidade de criar soluções não estava limitada ao segmento em que havia começado minha carreira.','Eu conseguia entender um problema, encontrar ferramentas disponíveis e construir uma resposta.']},
+{k:'Brio',t:'Um mês de prazo. Duas semanas de aprendizado.',main:['O desafio: aprender em um mês.','O resultado: duas semanas.'],
+ n:['Quando surgiu a oportunidade de trabalhar na Ana Paula Design, encontrei uma estrutura de produção predominantemente manual.','Entrei com o objetivo de automatizar processos.','Meu primeiro desafio era aprender a gerar planos de corte pelo Promob em um mês, mesmo sem conhecer o software.','Utilizando os conhecimentos acumulados durante anos e minha capacidade de aprendizado autodidata, consegui aprender em duas semanas.','Sem depender de um treinamento formal.']},
+{k:'Automação',t:'A transformação de uma empresa',main:['3 anos.','3 softwares.','Uma transformação operacional.'],
+ n:['Aquele primeiro desafio foi apenas o começo.','Criei sistemas utilizando planilhas para dar suporte à automatização da empresa.','Nos três anos seguintes, trabalhei com três softwares diferentes e participei da transformação dos processos produtivos.','Hoje, a produção opera de forma automatizada, incluindo as máquinas de corte.','Não foi apenas uma mudança de ferramentas.','Foi uma mudança na maneira como a empresa trabalha.']},
+{k:'Automação',t:'Da automação ao desenvolvimento de sistemas',main:['Processos organizados.','Conhecimento centralizado.'],
+ n:['Mais recentemente, desenvolvi um sistema interno de controle de padrões operacionais e assinaturas digitais.','Uma solução criada para mapear, organizar e gerenciar os padrões de processos da empresa.','Foi mais um passo na direção que minha carreira naturalmente vinha seguindo.','Transformar necessidades operacionais em soluções digitais.']},
+{k:'Inteligência artificial',t:'O encontro com a inteligência artificial',main:['A ferramenta mudou.','A essência permaneceu.'],
+ n:['Quando comecei a explorar a inteligência artificial, percebi que ela poderia potencializar tudo aquilo que havia desenvolvido durante minha trajetória.','Minha capacidade de aprender.','Minha experiência com processos.','Minha visão de negócio.','Minha criatividade para encontrar soluções.','Passei a explorar o desenvolvimento de aplicações web, automações e produtos digitais.','A inteligência artificial não mudou quem eu era.','Ela ampliou aquilo que eu era capaz de construir.']},
+{k:'Inteligência artificial',t:'Construindo soluções',main:['Problemas reais.','Soluções digitais.'],
+ n:['Comecei a aplicar essa capacidade em diferentes segmentos.','Desenvolvendo aplicações para profissionais, empresas e operações que possuem problemas reais.','Cada projeto representa uma oportunidade de aprender, testar hipóteses e transformar ideias em soluções concretas.','Não quero simplesmente utilizar inteligência artificial.','Quero criar valor através dela.']},
+{k:'Essência',t:'O que permanece quando tudo muda?',main:['Resiliência.','Brio.','Criatividade.'],
+ n:['Vivemos uma época em que ferramentas, profissões e modelos de negócio estão sendo transformados em uma velocidade impressionante.','Acredito que, independentemente dessas mudanças, três características continuarão sendo fundamentais.','A resiliência para enfrentar dificuldades e mudar de direção.','O brio para não se contentar com trabalhos medíocres e buscar conhecimento quando ele faz falta.','E a criatividade para enxergar possibilidades onde outros enxergam apenas problemas.','Minha história foi construída sobre essas três características.','Muito antes de conhecer a inteligência artificial.']},
+{k:'Próximo capítulo',t:'O próximo capítulo',main:['O próximo capítulo','ainda não foi escrito.'],
+ n:['Não posso prever quais ferramentas utilizarei daqui a cinco anos.','Não sei quais tecnologias irão surgir, nem quais problemas precisarei enfrentar.','Mas minha história demonstra que tenho disposição para aprender, capacidade para me adaptar e criatividade para construir.','Quero fazer parte de uma equipe que não esteja apenas acompanhando as transformações da inteligência artificial, mas que esteja criando soluções através dela.','Porque, antes de aprender a programar, aprendi a resolver.','E ainda tenho muitos problemas para resolver.']},
+{k:'Contato',t:'Encerramento e contato',main:['Vinicius Freire'],sub:'Resolvendo problemas desde antes de saber como chamá-los.',final:true,
+ n:['Resiliência. Brio. Criatividade.','Obrigado por acompanhar minha trajetória.']}
+];
+const N=S.length;
+
+/* ---------------------- estado e montagem ---------------------- */
+const $=s=>document.querySelector(s);
+const stage=$('#stage'),narr=$('#narr'),drawer=$('#drawer');
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const root=document.documentElement;
+if(RM)root.classList.add('rm');
+if((navigator.hardwareConcurrency||8)<=2)root.classList.add('lite');
+
+function ink(lines,start,step){
+  let i=0,out=[];
+  lines.forEach(line=>{
+    out.push(line.split(' ').map(w=>`<span class="w">${[...w].map(ch=>`<span class="c" style="--d:${Math.round(start+(i++)*step)}">${ch}</span>`).join('')}</span>`).join(' '));
+  });
+  return {html:out.join('<br>'),count:i};
+}
+function btn(key,label,pri){
+  const u=LINKS[key];
+  return u?`<a class="btn ${pri?'pri':''}" href="${u}" ${/^https?:/.test(u)?'target="_blank" rel="noopener"':''}>${label}</a>`
+          :`<button class="btn ${pri?'pri':''}" data-pending="${key}" title="Link ainda não configurado">${label}</button>`;
+}
+const SHAPES='path,line,circle,rect,ellipse,polyline,polygon';
+S.forEach((s,idx)=>{
+  const sec=document.createElement('section');
+  sec.className='slide';sec.dataset.i=idx;sec.inert=true;
+  sec.setAttribute('aria-label',`Slide ${idx+1} de ${N}: ${s.t||s.main.join(' ')}`);
+  const chars=s.main.join('').length;
+  const step=Math.min(38,2600/Math.max(chars,1));
+  const m=ink(s.main,500,step);
+  const endMain=500+m.count*step;
+  let extra='';
+  if(s.impact){const im=ink([s.impact],endMain+300,22);extra+=`<p class="impact">${im.html}</p>`;}
+  const dl=(endMain+(s.impact?1300:200)+'ms');
+  if(s.sub)extra+=`<p class="sub">${s.sub}</p>`;
+  const btns=s.final?`<div class="btns">${btn('projetos','Conheça meus projetos',1)}${btn('curriculo','Baixe meu currículo')}${btn('contato','Entre em contato')}${btn('github','GitHub')}${btn('linkedin','LinkedIn')}</div>`:'';
+  sec.style.setProperty('--dl',dl);
+  sec.innerHTML=`<div class="art"><svg viewBox="0 0 400 300" role="img" aria-label="${(s.t||s.main.join(' ')).replace(/"/g,'')}"><g filter="url(#rough)">${ART[idx+1]()}</g></svg></div>
+   <div class="txt"><p class="kicker">${s.k}</p><h2 class="main ${s.cls||''}">${m.html}</h2>${extra}${btns}</div>`;
+  stage.appendChild(sec);
+  /* normaliza o comprimento dos traços e escalona a ordem de desenho */
+  const els=[...sec.querySelectorAll('.art .d,.art .f')];
+  const st=Math.min(.16,3.4/Math.max(els.length,1));
+  els.forEach((el,i)=>{
+    if(el.matches(SHAPES))el.setAttribute('pathLength','1');
+    if(!el.style.getPropertyValue('--dl'))el.style.setProperty('--dl',(.25+i*st).toFixed(2)+'s');
+  });
+});
+const slides=[...stage.children];
+
+/* a linha que conecta a trajetória */
+(function(){
+  let d='M0 24',x=0;
+  while(x<1000){x+=10;const y=24+11*Math.sin(x/62)+6*Math.sin(x/21+1)+(x>300&&x<345?-9*Math.sin((x-300)/45*Math.PI):0);d+=` L${x} ${y.toFixed(1)}`;}
+  $('#trailBg').setAttribute('d',d);$('#trailFg').setAttribute('d',d);
+})();
+const trailBg=$('#trailBg'),trailFg=$('#trailFg'),pen=$('#pen'),wrap=$('#trailWrap');
+function setTrail(i){
+  const p=i/(N-1),L=trailBg.getTotalLength(),pt=trailBg.getPointAtLength(p*L),r=wrap.getBoundingClientRect();
+  trailFg.style.strokeDashoffset=(1.03-p*1.03).toFixed(4);
+  pen.style.left=(pt.x/1000*r.width)+'px';pen.style.top=(pt.y/46*r.height)+'px';
+}
+
+/* ---------------------- morphing do slide 1 ---------------------- */
+const rot=(pts,deg)=>{const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return pts.map(([x,y])=>[x*c-y*s,x*s+y*c])};
+const resample=(pts,n)=>{
+  const P=[...pts,pts[0]],Ld=[0];
+  for(let i=1;i<P.length;i++)Ld.push(Ld[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
+  const tot=Ld[Ld.length-1],out=[];let j=1;
+  for(let k=0;k<n;k++){const t=tot*k/n;while(Ld[j]<t)j++;const f=(t-Ld[j-1])/((Ld[j]-Ld[j-1])||1);
+    out.push([P[j-1][0]+(P[j][0]-P[j-1][0])*f,P[j-1][1]+(P[j][1]-P[j-1][1])*f]);}
+  return out;
+};
+const SHP=[
+ rot([[-100,-14],[50,-14],[100,0],[50,14],[-100,14]],-32),                               /* lápis */
+ rot([[-100,-17],[10,-17],[10,-8],[100,-8],[100,8],[10,8],[10,17],[-100,17]],-32),        /* formão */
+ [[-80,-66],[80,-66],[80,30],[16,30],[16,50],[46,50],[46,62],[-46,62],[-46,50],[-16,50],[-16,30],[-80,30]], /* computador */
+ [[0,-96],[17,-17],[96,0],[17,17],[0,96],[-17,17],[-96,0],[-17,-17]]                      /* IA */
+].map(p=>resample(p,160).map(([x,y])=>[x+200,y+128]));
+const toD=p=>'M'+p.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join('L')+'Z';
+const morphEl=document.getElementById('morph');
+let mTok=0,mIdx=0;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function dots(i){for(let k=0;k<4;k++){const e=document.getElementById('dot'+k);if(e){e.classList.toggle('fm',k===i)}}}
+function startMorph(){
+  stopMorph();mIdx=0;morphEl.setAttribute('d',toD(SHP[RM?3:0]));dots(RM?3:0);
+  if(RM)return;
+  const tok=++mTok;
+  const hold=(ms,fn)=>setTimeout(()=>{if(tok===mTok)fn()},ms);
+  const step=()=>{
+    const a=SHP[mIdx],b=SHP[(mIdx+1)%4];let t0=null;
+    const f=ts=>{if(tok!==mTok)return;t0??=ts;const t=Math.min(1,(ts-t0)/1100),e=ease(t);
+      morphEl.setAttribute('d',toD(a.map((p,i)=>[p[0]+(b[i][0]-p[0])*e,p[1]+(b[i][1]-p[1])*e])));
+      if(t<1)requestAnimationFrame(f);else{mIdx=(mIdx+1)%4;dots(mIdx);hold(1500,step);}};
+    requestAnimationFrame(f);
+  };
+  hold(2600,step);
+}
+function stopMorph(){mTok++}
+morphEl.setAttribute('d',toD(SHP[0]));
+
+/* ---------------------- narração e voz ---------------------- */
+let cur=-1,auto=false,voiceOn=false,timer=null,vTok=0,speakT=null;
+const synth='speechSynthesis' in window?window.speechSynthesis:null;
+function renderNarr(i){
+  narr.innerHTML=S[i].n.map(p=>typeof p==='string'?`<p>${p}</p>`:`<p class="q">“${p.q}”</p>`).join('');
+  narr.scrollTop=0;
+}
+function stopSpeak(){vTok++;clearTimeout(speakT);if(synth)synth.cancel();narr.querySelectorAll('.say').forEach(e=>e.classList.remove('say'))}
+function speak(){
+  stopSpeak();if(!voiceOn||!synth)return;
+  const tok=vTok,ps=[...narr.children];let k=0;
+  const voice=synth.getVoices().find(v=>/^pt[-_]BR/i.test(v.lang))||synth.getVoices().find(v=>/^pt/i.test(v.lang));
+  const nextP=()=>{
+    if(tok!==vTok)return;
+    ps.forEach(p=>p.classList.remove('say'));
+    if(k>=ps.length){if(auto)speakT=setTimeout(()=>{if(tok===vTok)go(cur+1)},900);return;}
+    const p=ps[k++];p.classList.add('say');p.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});
+    const u=new SpeechSynthesisUtterance(p.textContent.replace(/[“”]/g,''));
+    u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.97;u.onend=nextP;u.onerror=nextP;synth.speak(u);
+  };
+  speakT=setTimeout(nextP,700);
+}
+function dur(i){const w=S[i].n.map(p=>typeof p==='string'?p:p.q).join(' ').split(/\s+/).length;return Math.max(7000,w*380+3500)}
+function schedule(){
+  clearTimeout(timer);
+  if(!auto||voiceOn)return;
+  timer=setTimeout(()=>{cur<N-1?go(cur+1):setAuto(false)},dur(cur));
+}
+function setAuto(v){
+  auto=v;$('#bAuto').setAttribute('aria-pressed',v);$('#bAuto').textContent=v?'❚❚ Pausar':'▶ Auto';
+  if(!v){clearTimeout(timer);}else{if(cur===N-1)go(0);else{schedule();if(voiceOn&&!synth.speaking)speak();}}
+}
+function setVoice(v){
+  voiceOn=v;$('#bVoice').setAttribute('aria-pressed',v);
+  if(v){setDrawer(true);speak();clearTimeout(timer);}else{stopSpeak();schedule();}
+}
+function setDrawer(v){drawer.classList.toggle('open',v);$('#bNarr').setAttribute('aria-expanded',v)}
+
+/* ---------------------- navegação ---------------------- */
+function go(n,instant){
+  n=Math.max(0,Math.min(N-1,n));
+  if(n===cur)return;
+  const dir=n>cur?1:-1,old=cur;
+  stage.style.setProperty('--enter',(dir*36)+'px');stage.style.setProperty('--leave',(-dir*36)+'px');
+  if(old>=0){const o=slides[old];o.classList.remove('active');o.classList.add('out');o.inert=true;setTimeout(()=>o.classList.remove('out'),700);}
+  cur=n;
+  const s=slides[n];
+  s.classList.remove('out');
+  /* reinicia as animações quando o slide volta a entrar */
+  void s.offsetWidth;
+  s.classList.add('active');s.inert=false;
+  renderNarr(n);
+  $('#count').textContent=String(n+1).padStart(2,'0')+' / '+N;
+  wrap.setAttribute('aria-valuenow',n+1);
+  $('#prev').disabled=n===0;$('#next').disabled=n===N-1;
+  setTrail(n);
+  history.replaceState(null,'','#'+(n+1));
+  n===0?startMorph():stopMorph();
+  stopSpeak();speak();schedule();
+}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+$('#next').onclick=()=>{next()};$('#prev').onclick=()=>{prev()};
+$('#bAuto').onclick=()=>setAuto(!auto);
+$('#bNarr').onclick=()=>setDrawer(!drawer.classList.contains('open'));
+$('#bClose').onclick=()=>setDrawer(false);
+if(synth){$('#bVoice').hidden=false;$('#bVoice').onclick=()=>setVoice(!voiceOn);synth.getVoices();}
+
+addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('a,button')&&(e.key===' '||e.key==='Enter'))return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||k===' '){e.preventDefault();next()}
+  else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){e.preventDefault();prev()}
+  else if(k==='Home')go(0);else if(k==='End')go(N-1);
+  else if(k==='p'||k==='P')setAuto(!auto);
+  else if(k==='n'||k==='N')setDrawer(!drawer.classList.contains('open'));
+  else if(k==='Escape')setDrawer(false);
+});
+/* deslize */
+let sx=0,sy=0,st=0,sid=null;
+stage.addEventListener('pointerdown',e=>{if(e.target.closest('a,button,#drawer'))return;sx=e.clientX;sy=e.clientY;st=Date.now();sid=e.pointerId});
+stage.addEventListener('pointerup',e=>{
+  if(e.pointerId!==sid)return;sid=null;
+  const dx=e.clientX-sx,dy=e.clientY-sy;
+  if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.3&&Date.now()-st<900)dx<0?next():prev();
+});
+/* roda do mouse */
+let wl=0,wa=0;
+stage.addEventListener('wheel',e=>{
+  if(e.target.closest('#drawer'))return;
+  const now=Date.now();if(now-wl<750)return;
+  wa+=e.deltaY+e.deltaX;
+  if(Math.abs(wa)>50){wl=now;(wa>0?next:prev)();wa=0}
+},{passive:true});
+/* parallax discreto */
+if(!RM&&matchMedia('(pointer:fine)').matches){
+  let raf=0;
+  stage.addEventListener('pointermove',e=>{
+    if(raf)return;raf=requestAnimationFrame(()=>{raf=0;
+      const nx=e.clientX/innerWidth-.5,ny=e.clientY/innerHeight-.5;
+      stage.style.setProperty('--px',(nx*-10).toFixed(1)+'px');stage.style.setProperty('--py',(ny*-8).toFixed(1)+'px');
+      stage.style.setProperty('--bx',(nx*14).toFixed(1)+'px');stage.style.setProperty('--by',(ny*14).toFixed(1)+'px');});
+  });
+}
+/* links ainda não informados */
+const toast=$('#toast');let tt;
+stage.addEventListener('click',e=>{
+  const b=e.target.closest('[data-pending]');if(!b)return;
+  toast.textContent='Link ainda não configurado — preencha LINKS no início do script em index.html.';
+  toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),3200);
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(timer);if(synth)synth.pause()}else{if(synth)synth.resume();schedule()}});
+addEventListener('resize',()=>setTrail(Math.max(cur,0)));
+
+const h=parseInt(location.hash.slice(1),10);
+go(h>=1&&h<=N?h-1:0);
+</script>
+</body>
+</html>
