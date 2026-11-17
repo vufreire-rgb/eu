@@ -99,8 +99,8 @@ html.lite .art g[filter]{filter:none}
 /* ---------- narração ---------- */
 #drawer{position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));max-height:46svh;background:#fff;z-index:4;
  border:2.5px solid var(--ink);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.08);
- transform:translateY(120%);transition:transform .45s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
-#drawer.open{transform:none}
+ transform:translateY(calc(100% + 90px));visibility:hidden;transition:transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s .45s;display:flex;flex-direction:column}
+#drawer.open{transform:none;visibility:visible;transition-delay:0s}
 #drawer header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--m);font-weight:600}
 #drawer header button{font-size:20px;line-height:1;color:var(--ink);padding:2px 6px}
 #narr{overflow:auto;padding:4px 20px 18px;max-width:680px;margin:0 auto;width:100%}
@@ -148,7 +148,7 @@ html.lite .art g[filter]{filter:none}
  .main.quote{font-size:clamp(42px,4.8vw,70px)}
  .sub{font-size:16px}
  #bar{max-width:900px;margin:0 auto;width:100%}
- #drawer{left:50%;right:auto;width:min(720px,92vw);transform:translate(-50%,120%);max-height:50svh}
+ #drawer{left:50%;right:auto;width:min(720px,92vw);transform:translate(-50%,calc(100% + 90px));max-height:50svh}
  #drawer.open{transform:translate(-50%,0)}
 }
 @media (max-height:640px) and (max-width:899px){
