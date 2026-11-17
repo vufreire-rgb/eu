@@ -206,12 +206,12 @@ html.rm #narr p{opacity:1;transform:none}
    botão sem link mostra um aviso ao ser tocado.
    ===================================================================== */
 const LINKS = {
-  projetos:  '',   // ex.: 'https://...'
-  curriculo: '',   // ex.: 'curriculo.pdf'
-  contato:   '',   // ex.: 'mailto:...'
-  github:    '',   // ex.: 'https://github.com/...'
-  linkedin:  ''    // ex.: 'https://www.linkedin.com/in/...'
+  whatsapp: 'https://wa.me/5512991122596?text=' + encodeURIComponent('Olá, Vinicius! Assisti à sua apresentação e gostaria de conversar.')
 };
+
+/* Voz: se existirem arquivos audio/01.mp3 ... audio/22.mp3 (sua própria gravação
+   ou uma voz sintética de qualidade), eles tocam no lugar da voz do navegador. */
+const AUDIO = { dir: 'audio/', ext: 'mp3' };
 
 /* ---------------------- helpers de desenho ---------------------- */
 const UP='M0 -47 L-13 -63 M0 -47 L13 -63';
@@ -560,7 +560,7 @@ S.forEach((s,idx)=>{
   if(s.impact){const im=ink([s.impact],endMain+300,22);extra+=`<p class="impact">${im.html}</p>`;}
   const dl=(endMain+(s.impact?1300:200)+'ms');
   if(s.sub)extra+=`<p class="sub">${s.sub}</p>`;
-  const btns=s.final?`<div class="btns">${btn('projetos','Conheça meus projetos',1)}${btn('curriculo','Baixe meu currículo')}${btn('contato','Entre em contato')}${btn('github','GitHub')}${btn('linkedin','LinkedIn')}</div>`:'';
+  const btns=s.final?`<div class="btns">${btn('whatsapp','Me chame no WhatsApp',1)}</div>`:'';
   sec.style.setProperty('--dl',dl);
   sec.innerHTML=`<div class="art"><svg viewBox="0 0 400 300" role="img" aria-label="${(s.t||s.main.join(' ')).replace(/"/g,'')}"><g filter="url(#rough)">${ART[idx+1]()}</g></svg></div>
    <div class="txt"><p class="kicker">${s.k}</p><h2 class="main ${s.cls||''}">${m.html}</h2>${extra}${btns}</div>`;
@@ -627,21 +627,30 @@ function stopMorph(){mTok++}
 morphEl.setAttribute('d',toD(SHP[0]));
 
 /* ---------------------- narração e voz ---------------------- */
-let cur=-1,auto=false,voiceOn=false,timer=null,vTok=0,speakT=null;
+let aud=null,cur=-1,auto=false,voiceOn=false,timer=null,vTok=0,speakT=null;
 const synth='speechSynthesis' in window?window.speechSynthesis:null;
 function renderNarr(i){
   narr.innerHTML=S[i].n.map(p=>typeof p==='string'?`<p>${p}</p>`:`<p class="q">“${p.q}”</p>`).join('');
   narr.scrollTop=0;
 }
-function stopSpeak(){vTok++;clearTimeout(speakT);if(synth)synth.cancel();narr.querySelectorAll('.say').forEach(e=>e.classList.remove('say'))}
+function stopSpeak(){vTok++;clearTimeout(speakT);if(aud){aud.onended=aud.onerror=null;aud.pause();aud=null}if(synth)synth.cancel();narr.querySelectorAll('.say').forEach(e=>e.classList.remove('say'))}
 function speak(){
-  stopSpeak();if(!voiceOn||!synth)return;
+  stopSpeak();if(!voiceOn)return;
   const tok=vTok,ps=[...narr.children];let k=0;
+  const done=()=>{if(auto)speakT=setTimeout(()=>{if(tok===vTok)go(cur+1)},900)};
+  const synthFallback=()=>{if(tok===vTok&&synth)speakSynth(tok,ps,done)};
+  const a=new Audio(AUDIO.dir+String(cur+1).padStart(2,'0')+'.'+AUDIO.ext);
+  aud=a;a.onerror=()=>{if(aud===a){aud=null;synthFallback()}};
+  a.onended=()=>{if(aud===a){aud=null;done()}};
+  speakT=setTimeout(()=>{if(tok===vTok)a.play().catch(()=>{if(aud===a){aud=null;synthFallback()}})},700);
+}
+function speakSynth(tok,ps,done){
+  let k=0;
   const voice=synth.getVoices().find(v=>/^pt[-_]BR/i.test(v.lang))||synth.getVoices().find(v=>/^pt/i.test(v.lang));
   const nextP=()=>{
     if(tok!==vTok)return;
     ps.forEach(p=>p.classList.remove('say'));
-    if(k>=ps.length){if(auto)speakT=setTimeout(()=>{if(tok===vTok)go(cur+1)},900);return;}
+    if(k>=ps.length){done();return;}
     const p=ps[k++];p.classList.add('say');p.scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});
     const u=new SpeechSynthesisUtterance(p.textContent.replace(/[“”]/g,''));
     u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.97;u.onend=nextP;u.onerror=nextP;synth.speak(u);
@@ -656,7 +665,7 @@ function schedule(){
 }
 function setAuto(v){
   auto=v;$('#bAuto').setAttribute('aria-pressed',v);$('#bAuto').textContent=v?'❚❚ Pausar':'▶ Auto';
-  if(!v){clearTimeout(timer);}else{if(cur===N-1)go(0);else{schedule();if(voiceOn&&!synth.speaking)speak();}}
+  if(!v){clearTimeout(timer);}else{if(cur===N-1)go(0);else{schedule();if(voiceOn&&!aud&&!(synth&&synth.speaking))speak();}}
 }
 function setVoice(v){
   voiceOn=v;$('#bVoice').setAttribute('aria-pressed',v);
@@ -691,7 +700,7 @@ $('#next').onclick=()=>{next()};$('#prev').onclick=()=>{prev()};
 $('#bAuto').onclick=()=>setAuto(!auto);
 $('#bNarr').onclick=()=>setDrawer(!drawer.classList.contains('open'));
 $('#bClose').onclick=()=>setDrawer(false);
-if(synth){$('#bVoice').hidden=false;$('#bVoice').onclick=()=>setVoice(!voiceOn);synth.getVoices();}
+$('#bVoice').hidden=false;$('#bVoice').onclick=()=>setVoice(!voiceOn);if(synth)synth.getVoices();
 
 addEventListener('keydown',e=>{
   if(e.target.closest&&e.target.closest('a,button')&&(e.key===' '||e.key==='Enter'))return;
@@ -736,7 +745,7 @@ stage.addEventListener('click',e=>{
   toast.textContent='Link ainda não configurado — preencha LINKS no início do script em index.html.';
   toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),3200);
 });
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(timer);if(synth)synth.pause()}else{if(synth)synth.resume();schedule()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(timer);if(synth)synth.pause();if(aud)aud.pause()}else{if(synth)synth.resume();if(aud)aud.play().catch(()=>{});schedule()}});
 addEventListener('resize',()=>setTrail(Math.max(cur,0)));
 
 const h=parseInt(location.hash.slice(1),10);
