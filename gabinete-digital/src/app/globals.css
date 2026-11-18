@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { @apply bg-surface text-navy antialiased; overflow-x: hidden; }
+.grid > * { min-width: 0; }
+:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; border-radius: 6px; }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+@layer components {
+  .card { @apply rounded-2xl bg-white shadow-card border border-slate-100; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none min-h-[44px]; }
+  .btn-primary { @apply btn bg-brand text-white hover:bg-brand-600 shadow-sm; }
+  .btn-dark { @apply btn bg-navy text-white hover:bg-navy-700; }
+  .btn-ghost { @apply btn bg-white text-navy border border-slate-200 hover:bg-slate-50; }
+  .btn-ok { @apply btn bg-ok text-white hover:bg-ok-700; }
+  .btn-sm { @apply min-h-[36px] px-3 py-1.5 text-[13px]; }
+  .input { @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-navy placeholder:text-slate-400 transition focus:border-brand focus:ring-4 focus:ring-brand/10 focus:outline-none min-h-[44px]; }
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold; }
+}
+
+.skeleton { position: relative; overflow: hidden; @apply bg-slate-200/70 rounded-xl; }
+.skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent); animation: shimmer 1.2s infinite; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Impressão do ofício */
+@media print {
+  body { background: #fff !important; }
+  .no-print { display: none !important; }
+  .print-area { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; padding: 0 !important; }
+  @page { size: A4; margin: 18mm; }
+}
