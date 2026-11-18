@@ -2,8 +2,8 @@
 
 import { ArrowLeft, Building2, CalendarClock, EyeOff, FileText, Hash, History, Lock, MapPin, Phone, SearchX, Send, UserRound, Paperclip } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 import { CategoryIcon } from "@/components/category";
 import { CityMap } from "@/components/city-map";
 import { Conversation, PhotoGrid, Timeline } from "@/components/request-parts";
@@ -15,8 +15,8 @@ import { cn, fmtDate, fmtDateTime } from "@/lib/utils";
 
 type Tab = "conversa" | "linha" | "historico" | "notas";
 
-export default function StaffRequestDetail() {
-  const { id } = useParams<{ id: string }>();
+function Inner() {
+  const id = useSearchParams().get("id") ?? "";
   const router = useRouter();
   const { data, session, actorName, changeStatus, assign, setPriority, addNote, reply, addForwarding, patchRequest, toast } = useStore();
   const r = data.requests.find((x) => x.id === id);
@@ -74,7 +74,7 @@ export default function StaffRequestDetail() {
         <div className="mt-4 flex flex-wrap gap-2">
           <button className="btn-primary btn-sm" onClick={openStatus} data-testid="btn-status"><CalendarClock size={15} /> Atualizar status</button>
           <button className="btn-ghost btn-sm" disabled={!can("encaminhar")} onClick={() => { setFOrg(r.orgao); setFDesc(""); setFwdOpen(true); }} data-testid="btn-encaminhar"><Send size={15} /> Registrar encaminhamento</button>
-          <Link href={can("gerar_oficio") ? `/gabinete/oficio/${r.id}` : "#"} aria-disabled={!can("gerar_oficio")} className={cn("btn-dark btn-sm", !can("gerar_oficio") && "pointer-events-none opacity-50")} data-testid="btn-oficio"><FileText size={15} /> Gerar ofício</Link>
+          <Link href={can("gerar_oficio") ? `/gabinete/oficio?id=${r.id}` : "#"} aria-disabled={!can("gerar_oficio")} className={cn("btn-dark btn-sm", !can("gerar_oficio") && "pointer-events-none opacity-50")} data-testid="btn-oficio"><FileText size={15} /> Gerar ofício</Link>
           <button className="btn-ghost btn-sm" onClick={() => setTab("conversa")}>Responder</button>
         </div>
       </section>
@@ -166,7 +166,7 @@ export default function StaffRequestDetail() {
             <h2 className="font-bold">Documentos</h2>
             {r.documentos.length === 0 && <p className="text-slate-400">Nenhum documento.</p>}
             {r.documentos.map((d) => (
-              <Link key={d.id} href={`/gabinete/oficio/${r.id}`} className="flex items-center gap-2 rounded-xl bg-slate-50 p-2.5 hover:bg-slate-100"><Paperclip size={14} className="text-slate-400" /><span className="flex-1 truncate">{d.nome}</span><span className="text-[11px] text-slate-400">{fmtDate(d.em)}</span></Link>
+              <Link key={d.id} href={`/gabinete/oficio?id=${r.id}`} className="flex items-center gap-2 rounded-xl bg-slate-50 p-2.5 hover:bg-slate-100"><Paperclip size={14} className="text-slate-400" /><span className="flex-1 truncate">{d.nome}</span><span className="text-[11px] text-slate-400">{fmtDate(d.em)}</span></Link>
             ))}
             {oficios.length > 0 && <p className="text-[11px] text-slate-400">{oficios.length} ofício(s) gerado(s)</p>}
           </section>
@@ -199,4 +199,8 @@ export default function StaffRequestDetail() {
       </Modal>
     </div>
   );
+}
+
+export default function StaffRequestDetail() {
+  return <Suspense><Inner /></Suspense>;
 }

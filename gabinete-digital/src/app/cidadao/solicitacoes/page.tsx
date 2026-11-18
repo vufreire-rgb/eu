@@ -26,7 +26,7 @@ export default function MyRequests() {
           </button>
         ))}
       </div>
-      {list.length ? <div className="grid gap-2.5 md:grid-cols-2">{list.map((r) => <RequestCard key={r.id} r={r} href={`/cidadao/solicitacoes/${r.id}`} />)}</div>
+      {list.length ? <div className="grid gap-2.5 md:grid-cols-2">{list.map((r) => <RequestCard key={r.id} r={r} href={`/cidadao/solicitacoes/detalhe?id=${r.id}`} />)}</div>
         : <Empty icon={Inbox} title="Nada por aqui" text="Nenhuma solicitação neste filtro." />}
     </>
   );

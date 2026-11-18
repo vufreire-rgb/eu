@@ -41,7 +41,7 @@ export default function MapPage() {
             {CATEGORIES.map((c) => <span key={c.id} className="flex min-w-0 items-center gap-1.5"><i className="block h-2 w-2 shrink-0 rounded-full" style={{ background: c.color }} /><span className="truncate">{c.label}</span></span>)}
           </div>
           {selected && (
-            <Link href={`/gabinete/solicitacoes/${selected.id}`} className="mt-3 flex animate-pop items-center gap-3 rounded-xl bg-slate-50 p-3 hover:bg-slate-100">
+            <Link href={`/gabinete/solicitacoes/detalhe?id=${selected.id}`} className="mt-3 flex animate-pop items-center gap-3 rounded-xl bg-slate-50 p-3 hover:bg-slate-100">
               <CategoryIcon id={selected.categoria} size={16} />
               <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{selected.protocolo} · {selected.rua}</span><span className="text-xs text-slate-500">{selected.bairro}</span></span>
               <StatusBadge status={selected.status} short />

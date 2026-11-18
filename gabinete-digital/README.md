@@ -20,11 +20,22 @@ Verificações:
 npm run typecheck    # tsc --noEmit
 npm run lint         # next lint
 npm run build        # build de produção
-npm start &          # sobe o build em :3000
+npm start &          # serve a pasta out/ em :3000 (após build)
 npm run test:e2e     # navegação ponta a ponta (Playwright); BASE_URL opcional
 ```
 
 O teste E2E usa o pacote `playwright` já disponível no ambiente (`npm i -D playwright` se rodar em outra máquina).
+
+## Publicar no GitHub Pages
+
+O app é exportado como site estático (`output: "export"`). O workflow `.github/workflows/pages.yml` publica o Draw My Life em `/` e o Gabinete Digital em `/gabinete/`.
+
+1. Repositório → **Settings → Pages → Source: GitHub Actions**.
+2. Se aparecer bloqueio de branch no ambiente `github-pages`: **Settings → Environments → github-pages → Deployment branches** e permita a branch usada.
+3. Faça push (ou rode o workflow manualmente em *Actions*). URL: `https://<usuario>.github.io/<repo>/gabinete/`.
+
+Build local equivalente: `NEXT_PUBLIC_BASE_PATH=/eu/gabinete npm run build` (a saída fica em `out/`). Sem a variável, o app roda na raiz.
+Detalhes de solicitação e ofício usam `?id=` na URL, pois a exportação estática não gera rotas dinâmicas.
 
 ## Publicar na Vercel
 
@@ -47,7 +58,7 @@ src/
   app/
     page.tsx                 hub de demonstração / seleção de perfil
     cidadao/                 início, nova (wizard), solicitacoes, [id], notificacoes, mandato, contato
-    gabinete/                painel, solicitacoes (tabela+kanban), [id], oficio/[id], oficios, mapa, comunicacao, equipe
+    gabinete/                painel, solicitacoes (tabela+kanban), detalhe?id=, oficio?id=, oficios, mapa, comunicacao, equipe
     plataforma/              visão geral SaaS, gabinetes, novo, arquitetura
     privacidade/             política de privacidade demonstrativa
     manifest.ts, icon.svg    base para PWA

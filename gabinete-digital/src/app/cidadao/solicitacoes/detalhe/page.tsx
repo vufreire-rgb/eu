@@ -2,8 +2,8 @@
 
 import { ArrowLeft, MapPin, Hash } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, Suspense } from "react";
 import { CategoryIcon } from "@/components/category";
 import { Conversation, LegalNote, PhotoGrid, Timeline } from "@/components/request-parts";
 import { Empty, StatusBadge } from "@/components/ui";
@@ -12,8 +12,8 @@ import { useStore } from "@/lib/store";
 import { fmtDate, fmtDateTime } from "@/lib/utils";
 import { SearchX } from "lucide-react";
 
-export default function CitizenRequestDetail() {
-  const { id } = useParams<{ id: string }>();
+function Inner() {
+  const id = useSearchParams().get("id") ?? "";
   const { data, session, citizenMessage, markRead, toast } = useStore();
   const r = data.requests.find((x) => x.id === id && x.citizenId === session.citizenId);
 
@@ -62,4 +62,8 @@ export default function CitizenRequestDetail() {
       <p className="text-center text-[11px] text-slate-400">Última atualização: {fmtDateTime(r.atualizadoEm)}</p>
     </div>
   );
+}
+
+export default function CitizenRequestDetail() {
+  return <Suspense><Inner /></Suspense>;
 }

@@ -90,7 +90,7 @@ export default function Requests() {
               <tbody className="divide-y divide-slate-100">
                 {list.slice(0, 100).map((r) => (
                   <tr key={r.id} className="transition hover:bg-slate-50/70">
-                    <td className="px-4 py-3"><Link href={`/gabinete/solicitacoes/${r.id}`} className="font-semibold text-brand hover:underline" data-testid="row-link">{r.protocolo}</Link>{r.novaMensagemCidadao && <MessageSquare size={13} className="ml-1.5 inline text-amber-500" aria-label="Nova mensagem do cidadão" />}<div className="text-xs text-slate-400">{citizen(r.citizenId)?.nome}</div></td>
+                    <td className="px-4 py-3"><Link href={`/gabinete/solicitacoes/detalhe?id=${r.id}`} className="font-semibold text-brand hover:underline" data-testid="row-link">{r.protocolo}</Link>{r.novaMensagemCidadao && <MessageSquare size={13} className="ml-1.5 inline text-amber-500" aria-label="Nova mensagem do cidadão" />}<div className="text-xs text-slate-400">{citizen(r.citizenId)?.nome}</div></td>
                     <td className="px-4 py-3"><span className="flex items-center gap-2"><CategoryIcon id={r.categoria} size={14} />{CATEGORY_BY_ID[r.categoria].label}</span></td>
                     <td className="px-4 py-3 text-slate-600">{r.bairro}</td>
                     <td className="px-4 py-3"><StatusBadge status={r.status} short /></td>
@@ -123,7 +123,7 @@ export default function Requests() {
                       <div className="flex items-start gap-2">
                         <CategoryIcon id={r.categoria} size={14} />
                         <div className="min-w-0 flex-1">
-                          <Link href={`/gabinete/solicitacoes/${r.id}`} className="block truncate text-sm font-semibold hover:text-brand">{CATEGORY_BY_ID[r.categoria].label}</Link>
+                          <Link href={`/gabinete/solicitacoes/detalhe?id=${r.id}`} className="block truncate text-sm font-semibold hover:text-brand">{CATEGORY_BY_ID[r.categoria].label}</Link>
                           <p className="truncate text-xs text-slate-500">{r.protocolo} · {r.bairro}</p>
                         </div>
                         <GripVertical size={14} className="mt-0.5 text-slate-300" aria-hidden />

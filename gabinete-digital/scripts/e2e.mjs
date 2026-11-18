@@ -21,7 +21,7 @@ const noHScroll = async (name) => ok(await page.evaluate(() => document.document
 console.log("1-4. Cidadão cria solicitação de iluminação com foto");
 await page.goto(BASE + "/");
 await page.getByTestId("enter-cidadao").click();
-await page.waitForURL("**/cidadao");
+await page.waitForURL("**/cidadao/");
 await noHScroll("início cidadão");
 await page.getByTestId("cta-nova").click();
 await page.getByTestId("next").click();

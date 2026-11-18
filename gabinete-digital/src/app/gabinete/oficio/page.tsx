@@ -2,8 +2,8 @@
 
 import { ArrowLeft, Printer, Save, SearchX } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { Empty, Field } from "@/components/ui";
 import { CATEGORY_BY_ID, OFICIO_WATERMARK } from "@/lib/constants";
 import { useStore } from "@/lib/store";
@@ -11,8 +11,8 @@ import { fmtLong } from "@/lib/utils";
 
 interface Form { destinatario: string; secretaria: string; assunto: string; descricao: string; providencias: string; data: string; identificacao: string }
 
-export default function OficioPage() {
-  const { id } = useParams<{ id: string }>();
+function Inner() {
+  const id = useSearchParams().get("id") ?? "";
   const { data, tenant, saveOficio, toast, ready } = useStore();
   const r = data.requests.find((x) => x.id === id);
   const existing = data.oficios.find((o) => o.requestId === id);
@@ -51,7 +51,7 @@ export default function OficioPage() {
   return (
     <div>
       <div className="no-print mb-4 flex flex-wrap items-center justify-between gap-2">
-        <Link href={`/gabinete/solicitacoes/${r.id}`} className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy"><ArrowLeft size={16} /> Solicitação {r.protocolo}</Link>
+        <Link href={`/gabinete/solicitacoes/detalhe?id=${r.id}`} className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy"><ArrowLeft size={16} /> Solicitação {r.protocolo}</Link>
         <div className="flex gap-2">
           <button className="btn-ghost btn-sm" onClick={save} data-testid="oficio-salvar"><Save size={15} /> {saved ? "Salvo" : "Salvar ofício"}</button>
           <button className="btn-primary btn-sm" onClick={print} data-testid="oficio-imprimir"><Printer size={15} /> Imprimir / salvar PDF</button>
@@ -99,4 +99,8 @@ export default function OficioPage() {
       </div>
     </div>
   );
+}
+
+export default function OficioPage() {
+  return <Suspense><Inner /></Suspense>;
 }

@@ -17,7 +17,7 @@ export default function Oficios() {
           {data.oficios.map((o) => {
             const r = data.requests.find((x) => x.id === o.requestId);
             return (
-              <Link key={o.id} href={`/gabinete/oficio/${o.requestId}`} className="flex items-center gap-3 p-4 hover:bg-slate-50" data-testid="oficio-item">
+              <Link key={o.id} href={`/gabinete/oficio?id=${o.requestId}`} className="flex items-center gap-3 p-4 hover:bg-slate-50" data-testid="oficio-item">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand"><FileText size={18} /></span>
                 <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">Ofício {o.numero} — {o.assunto}</span><span className="block text-xs text-slate-500">{r?.protocolo} · {fmtDateTime(o.criadoEm)}</span></span>
               </Link>
@@ -30,7 +30,7 @@ export default function Oficios() {
         <>
           <h2 className="mb-2 mt-6 font-bold">Solicitações com ofício registrado</h2>
           <div className="card divide-y divide-slate-100">
-            {withDocs.map((r) => <Link key={r.id} href={`/gabinete/oficio/${r.id}`} className="flex items-center justify-between p-3.5 text-sm hover:bg-slate-50"><span>{r.documentos[0].nome}</span><span className="text-xs text-brand">Abrir modelo</span></Link>)}
+            {withDocs.map((r) => <Link key={r.id} href={`/gabinete/oficio?id=${r.id}`} className="flex items-center justify-between p-3.5 text-sm hover:bg-slate-50"><span>{r.documentos[0].nome}</span><span className="text-xs text-brand">Abrir modelo</span></Link>)}
           </div>
         </>
       )}

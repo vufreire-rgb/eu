@@ -42,7 +42,7 @@ export default function CitizenHome() {
 
       <section>
         <SectionTitle title="Minhas solicitações" href="/cidadao/solicitacoes" />
-        {mine.length ? <div className="grid gap-2.5 md:grid-cols-3">{mine.map((r) => <RequestCard key={r.id} r={r} href={`/cidadao/solicitacoes/${r.id}`} />)}</div>
+        {mine.length ? <div className="grid gap-2.5 md:grid-cols-3">{mine.map((r) => <RequestCard key={r.id} r={r} href={`/cidadao/solicitacoes/detalhe?id=${r.id}`} />)}</div>
           : <Empty icon={FileText} title="Você ainda não registrou solicitações" text="Toque em “Nova solicitação” para começar." action={<Link href="/cidadao/nova" className="btn-primary">Nova solicitação</Link>} />}
       </section>
 

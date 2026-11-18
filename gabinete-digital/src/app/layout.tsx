@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   title: { default: "Gabinete Digital — Atendimento parlamentar", template: "%s · Gabinete Digital" },
   description: "Protótipo de plataforma de atendimento parlamentar: solicitações, acompanhamento e transparência. Ambiente de demonstração.",
   applicationName: "Gabinete Digital",
-  manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Gabinete Digital", statusBarStyle: "default" },
 };
 

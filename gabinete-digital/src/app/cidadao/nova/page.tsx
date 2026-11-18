@@ -84,7 +84,7 @@ export default function NewRequest() {
         </div>
         <LegalNote className="mt-4 text-left" />
         <div className="mt-6 flex flex-col gap-2">
-          <Link href={`/cidadao/solicitacoes/${done.id}`} className="btn-primary" data-testid="ver-solicitacao">Acompanhar solicitação</Link>
+          <Link href={`/cidadao/solicitacoes/detalhe?id=${done.id}`} className="btn-primary" data-testid="ver-solicitacao">Acompanhar solicitação</Link>
           <Link href="/cidadao" className="btn-ghost">Voltar ao início</Link>
         </div>
       </div>
