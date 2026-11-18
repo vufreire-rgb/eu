@@ -206,6 +206,8 @@ html.rm #narr p{opacity:1;transform:none}
    botão sem link mostra um aviso ao ser tocado.
    ===================================================================== */
 const LINKS = {
+  // PROVISÓRIO: trocar pela URL real da Vercel após a publicação
+  gabinete: 'https://gabinete-digital.vercel.app',
   whatsapp: 'https://wa.me/5512991122596?text=' + encodeURIComponent('Olá, Vinicius! Assisti à sua apresentação e gostaria de conversar.')
 };
 
@@ -560,7 +562,7 @@ S.forEach((s,idx)=>{
   if(s.impact){const im=ink([s.impact],endMain+300,22);extra+=`<p class="impact">${im.html}</p>`;}
   const dl=(endMain+(s.impact?1300:200)+'ms');
   if(s.sub)extra+=`<p class="sub">${s.sub}</p>`;
-  const btns=s.final?`<div class="btns">${btn('whatsapp','Me chame no WhatsApp',1)}</div>`:'';
+  const btns=s.final?`<div class="btns">${btn('whatsapp','Me chame no WhatsApp',1)}${btn('gabinete','Conheça o Gabinete Digital',0)}</div>`:'';
   sec.style.setProperty('--dl',dl);
   sec.innerHTML=`<div class="art"><svg viewBox="0 0 400 300" role="img" aria-label="${(s.t||s.main.join(' ')).replace(/"/g,'')}"><g filter="url(#rough)">${ART[idx+1]()}</g></svg></div>
    <div class="txt"><p class="kicker">${s.k}</p><h2 class="main ${s.cls||''}">${m.html}</h2>${extra}${btns}</div>`;
