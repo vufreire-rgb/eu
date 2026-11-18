@@ -57,7 +57,7 @@ Detalhes de solicitação e ofício usam `?id=` na URL, pois a exportação est�
 src/
   app/
     page.tsx                 hub de demonstração / seleção de perfil
-    cidadao/                 início, nova (wizard), solicitacoes, [id], notificacoes, mandato, contato
+    cidadao/                 início, nova (wizard), solicitacoes, detalhe?id=, notificacoes, mandato, contato
     gabinete/                painel, solicitacoes (tabela+kanban), detalhe?id=, oficio?id=, oficios, mapa, comunicacao, equipe
     plataforma/              visão geral SaaS, gabinetes, novo, arquitetura
     privacidade/             política de privacidade demonstrativa
