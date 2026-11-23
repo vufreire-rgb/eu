@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agenda Bio – Demonstração</title>
+<style>
+:root{--c:#0f766e;--on:#fff;--tint:color-mix(in srgb,var(--c) 9%,#f4f6f8);--ink:#17202a;--mut:#6b7684;--line:#e3e8ee}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#e9edf2;display:flex}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+
+/* painel (uso do vendedor) */
+.panel{width:340px;flex:none;background:#fff;border-right:1px solid var(--line);overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+.panel h1{font-size:17px}
+.panel p.hint{font-size:13px;color:var(--mut)}
+.f{display:flex;flex-direction:column;gap:6px}
+.f>label,.f>span.l{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.f input[type=text],.f input[type=tel],.f select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+.row{display:flex;gap:8px;align-items:center}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw button{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.sw button.on{box-shadow:0 0 0 2px var(--ink)}
+input[type=color]{width:44px;height:34px;border:1px solid var(--line);border-radius:8px;padding:2px;background:#fff}
+.f>label.chk{text-transform:none;letter-spacing:0;font-size:15px;font-weight:400;color:var(--ink)}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0;font-size:15px}
+.chk input{width:18px;height:18px;accent-color:var(--c)}
+.btn{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600}
+.btn.p{background:var(--c);color:var(--on);border-color:var(--c)}
+.logoRow{flex-wrap:wrap}
+.up{position:relative;overflow:hidden}
+.up input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.logoRow img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
+
+/* palco */
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;min-width:0}
+.phone{width:390px;max-width:100%;height:min(800px,calc(100vh - 40px));background:var(--tint);border-radius:28px;box-shadow:0 20px 60px rgba(20,30,50,.25);display:flex;flex-direction:column;overflow:hidden;border:8px solid #fff}
+.hd{background:var(--c);color:var(--on);padding:14px 16px;display:flex;gap:12px;align-items:center}
+.av{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-weight:700;font-size:18px;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.hd b{display:block;font-size:16px}
+.hd small{opacity:.9;font-size:13px}
+.on{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;margin-right:5px}
+.msgs{flex:1;overflow:auto;padding:16px 14px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.b{max-width:84%;padding:10px 13px;border-radius:16px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);align-self:flex-start;border-top-left-radius:4px;white-space:pre-line;animation:in .2s ease}
+.b.u{align-self:flex-end;background:var(--c);color:var(--on);border-radius:16px;border-top-right-radius:4px}
+.b.t{display:flex;gap:4px;padding:14px}
+.b.t i{width:7px;height:7px;border-radius:50%;background:#aab3bf;animation:bl 1s infinite}
+.b.t i:nth-child(2){animation-delay:.15s}.b.t i:nth-child(3){animation-delay:.3s}
+@keyframes bl{50%{opacity:.25}}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.ch{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 4px;animation:in .25s ease}
+.ch button{padding:9px 14px;border-radius:999px;border:1.5px solid var(--c);background:#fff;color:var(--c);font-weight:600;font-size:15px}
+.ch button:hover{background:var(--c);color:var(--on)}
+.ch.grid button{flex:1 1 28%;border-radius:12px}
+.ch button:disabled{opacity:.35;border-color:var(--line);color:var(--mut);cursor:not-allowed;background:#fff}
+.card{align-self:stretch;background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.1);animation:in .25s ease}
+.card h3{font-size:15px;margin-bottom:8px;color:var(--c)}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin-bottom:12px}
+.card dt{color:var(--mut)}
+.cta{display:block;text-align:center;padding:12px;border-radius:12px;background:#25d366;color:#fff;font-weight:700;text-decoration:none}
+.ft{padding:10px;background:#fff;border-top:1px solid var(--line);display:none;gap:8px}
+.ft.show{display:flex}
+.ft input{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:999px;min-width:0}
+.ft button{width:44px;border:0;border-radius:50%;background:var(--c);color:var(--on);font-size:18px}
+.pw{text-align:center;font-size:11px;color:var(--mut);padding:6px;background:#fff}
+
+.fab{display:none}
+@media(max-width:860px){
+  body{display:block}
+  .panel{position:fixed;inset:0;z-index:10;transform:translateX(-100%);transition:.25s;width:100%}
+  body.open .panel{transform:none}
+  .stage{padding:0;height:100%}
+  .phone{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
+  .fab{display:block;position:fixed;right:12px;bottom:76px;z-index:11;padding:10px 14px;border-radius:999px;border:0;background:#17202a;color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+}
+body.pres .panel{display:none}
+body.pres .fab{display:block}
+@media(min-width:861px){body.pres .fab{right:16px;bottom:16px}}
+</style>
+</head>
+<body>
+
+<aside class="panel" id="panel">
+  <div>
+    <h1>⚙️ Personalizar demonstração</h1>
+    <p class="hint">Ajuste e a prévia muda na hora. Tudo fica salvo neste aparelho.</p>
+  </div>
+
+  <div class="f"><label for="name">Nome do profissional</label>
+    <input type="text" id="name" placeholder="Ex.: Ana Souza"></div>
+
+  <div class="row">
+    <div class="f" style="flex:1"><label for="gender">Tratamento</label>
+      <select id="gender"><option value="F">Dra.</option><option value="M">Dr.</option></select></div>
+    <div class="f" style="flex:2"><label for="spec">Especialidade</label><select id="spec"></select></div>
+  </div>
+
+  <div class="f"><label for="whats">WhatsApp do consultório</label>
+    <input type="tel" id="whats" placeholder="(11) 99999-9999"></div>
+
+  <div class="f"><span class="l">Logo / foto</span>
+    <div class="row logoRow">
+      <img id="logoPrev" alt="" hidden>
+      <label class="btn up">Enviar imagem<input type="file" id="logo" accept="image/*"></label>
+      <label class="btn up">📷 Tirar foto<input type="file" id="logo2" accept="image/*" capture="user"></label>
+      <button class="btn" id="logoRm" hidden>Remover</button>
+    </div>
+    <div class="row"><input type="text" id="logoUrl" placeholder="ou cole o link de uma imagem"><button class="btn" id="logoGo">Usar</button></div>
+    <p class="hint" id="logoMsg"></p></div>
+
+  <div class="f"><span class="l">Cor principal</span>
+    <div class="row"><div class="sw" id="sw"></div><input type="color" id="color" aria-label="Escolher cor"></div></div>
+
+  <div class="f"><span class="l">Opções da conversa</span>
+    <label class="chk"><input type="checkbox" id="o_duvidas"> 💬 Tirar dúvidas</label>
+    <label class="chk"><input type="checkbox" id="o_consulta"> 📅 Agendar consulta</label>
+    <label class="chk"><input type="checkbox" id="o_retorno"> 🔁 Agendar retorno</label></div>
+
+  <div class="row">
+    <button class="btn" id="restart">↻ Reiniciar conversa</button>
+    <button class="btn p" id="present">▶ Apresentar</button>
+  </div>
+</aside>
+
+<main class="stage">
+  <div class="phone">
+    <div class="hd"><div class="av" id="av"></div><div><b id="hName"></b><small><span class="on"></span><span id="hSub"></span></small></div></div>
+    <div class="msgs" id="msgs"></div>
+    <form class="ft" id="ft"><input id="inp" autocomplete="off"><button aria-label="Enviar">➤</button></form>
+    <div class="pw">Agendamento online</div>
+  </div>
+</main>
+<button class="fab" id="fab">⚙️ Personalizar</button>
+
+<script>
+const SPECS={
+  dentista:{l:'Dentista',e:'🦷',n:'consulta',tag:'Cuidando do seu sorriso',
+    svc:['Avaliação / check-up','Limpeza','Clareamento','Ortodontia (aparelho)','Dor ou urgência'],
+    faq:[['Quanto tempo dura uma limpeza?','Em média 40 a 60 minutos. Na avaliação, o profissional indica a frequência ideal para você.'],
+         ['Clareamento dói?','Pode haver sensibilidade passageira. Fazemos uma avaliação antes para escolher o método mais confortável.'],
+         ['Atendem urgência?','Sim, dor e quebra de dente têm prioridade. Chame pelo WhatsApp para encaixarmos o mais rápido possível.']]},
+  nutricionista:{l:'Nutricionista',e:'🥗',n:'consulta',tag:'Alimentação com leveza e resultado',
+    svc:['Primeira consulta','Emagrecimento','Ganho de massa','Reeducação alimentar','Nutrição esportiva'],
+    faq:[['Preciso fazer dieta restrita?','Não. O plano é montado de acordo com a sua rotina, gostos e objetivo.'],
+         ['Como funciona a primeira consulta?','Conversamos sobre histórico e hábitos, fazemos a avaliação e você sai com orientações iniciais.'],
+         ['O retorno é incluso?','Pergunte pelo WhatsApp: a equipe informa as condições de retorno do seu plano.']]},
+  cardiologista:{l:'Cardiologista',e:'❤️',n:'consulta',tag:'Saúde do coração em primeiro lugar',
+    svc:['Consulta cardiológica','Check-up cardiológico','Avaliação pré-operatória','Hipertensão / colesterol','Liberação para atividade física'],
+    faq:[['Preciso levar exames?','Se tiver exames anteriores (eletro, ecocardiograma, exames de sangue), leve. Eles ajudam bastante.'],
+         ['Quando devo procurar um cardiologista?','Em casos de dor no peito, palpitação, falta de ar, pressão alta ou histórico familiar. Em emergência, procure um pronto-socorro.'],
+         ['Quanto dura a consulta?','Em geral de 30 a 50 minutos, conforme o caso.']]},
+  ginecologista:{l:'Ginecologista',e:'🌸',n:'consulta',tag:'Cuidado e acolhimento em cada fase',
+    svc:['Consulta de rotina','Preventivo / Papanicolau','Planejamento familiar','Pré-natal','Menopausa'],
+    faq:[['Como me preparar para a consulta?','Evite relações e cremes vaginais nas 48h antes se for fazer preventivo. Leve a data da última menstruação.'],
+         ['Posso consultar menstruada?','Para conversa e orientações sim; para preventivo, o ideal é remarcar. Pergunte pelo WhatsApp.'],
+         ['Com que frequência devo ir?','Em geral uma vez ao ano, ou conforme orientação médica.']]},
+  dermatologista:{l:'Dermatologista',e:'✨',n:'consulta',tag:'Pele saudável em qualquer idade',
+    svc:['Consulta dermatológica','Acne','Manchas','Mapeamento de pintas','Queda de cabelo'],
+    faq:[['Preciso ir sem maquiagem?','Sim, de preferência com a pele limpa para melhor avaliação.'],
+         ['Fazem tratamento de acne?','Sim. Avaliamos o tipo de acne e montamos um plano individual.'],
+         ['Quando checar as pintas?','Recomenda-se avaliação anual, ou antes se notar mudança de cor, tamanho ou formato.']]},
+  pediatra:{l:'Pediatra',e:'🧸',n:'consulta',tag:'Cuidando de quem você mais ama',
+    svc:['Consulta de puericultura','Criança doente','Vacinas / orientações','Acompanhamento do crescimento','Consulta pré-natal pediátrica'],
+    faq:[['Com que idade começa o acompanhamento?','Desde os primeiros dias de vida, com consultas frequentes no primeiro ano.'],
+         ['Atendem criança doente no mesmo dia?','Tentamos encaixar. Chame pelo WhatsApp informando os sintomas.'],
+         ['Devo levar a caderneta?','Sim, leve a caderneta de vacinação e exames recentes.']]},
+  psicologo:{l:'Psicólogo(a)',e:'🧠',n:'sessão',tag:'Um espaço seguro para você',
+    svc:['Primeira sessão','Terapia individual','Terapia de casal','Ansiedade / estresse','Atendimento online'],
+    faq:[['Como funciona a primeira sessão?','É um acolhimento: você conta o que a trouxe até aqui e combinamos como seguir, no seu ritmo.'],
+         ['Atendem online?','Sim, também atendemos por videochamada.'],
+         ['Tudo é sigiloso?','Sim. O sigilo é parte do código de ética da profissão.']]},
+  ortopedista:{l:'Ortopedista',e:'🦴',n:'consulta',tag:'Movimento sem dor',
+    svc:['Consulta ortopédica','Dor na coluna','Joelho / ombro','Lesão esportiva','Avaliação pós-cirúrgica'],
+    faq:[['Devo levar exames de imagem?','Sim, raio-X, ressonância ou ultrassom anteriores ajudam o diagnóstico.'],
+         ['Tratam lesões do esporte?','Sim, desde entorses até lesões de ligamento, com plano de reabilitação.'],
+         ['Preciso de pedido médico?','Não para a consulta. Para convênios, confirme as regras pelo WhatsApp.']]},
+  fisioterapeuta:{l:'Fisioterapeuta',e:'💪',n:'avaliação',tag:'Recupere o movimento e a qualidade de vida',
+    svc:['Avaliação fisioterapêutica','Dor nas costas','Reabilitação pós-cirúrgica','Pilates clínico','Fisioterapia esportiva'],
+    faq:[['Quantas sessões preciso?','Depende do caso. Após a avaliação montamos o plano com a quantidade estimada.'],
+         ['Preciso de encaminhamento?','Não é obrigatório, mas leve exames e laudos se tiver.'],
+         ['Que roupa usar?','Roupas confortáveis que permitam movimento.']]},
+  oftalmologista:{l:'Oftalmologista',e:'👁️',n:'consulta',tag:'Enxergar bem faz toda a diferença',
+    svc:['Consulta de rotina','Grau / óculos','Lentes de contato','Glaucoma / retina','Avaliação infantil'],
+    faq:[['A consulta dilata a pupila?','Em alguns casos sim. Por isso, venha acompanhado(a), se possível.'],
+         ['Levo meus óculos?','Sim, leve os óculos e lentes que usa hoje.'],
+         ['Atendem crianças?','Sim, com avaliação adequada para cada idade.']]}
+};
+const COLORS=['#0f766e','#2563eb','#7c3aed','#db2777','#dc2626','#ea580c','#0891b2','#16a34a','#1f2937'];
+const DEF={name:'',gender:'F',spec:'dentista',whats:'',color:'#0f766e',logo:'',duvidas:true,consulta:true,retorno:true};
+let cfg={...DEF};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('agendabio')||'{}'))}catch(e){}
+if(!SPECS[cfg.spec])cfg.spec='dentista';
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const save=()=>{try{localStorage.setItem('agendabio',JSON.stringify(cfg))}catch(e){}};
+
+/* ---------- aparência ---------- */
+function who(){return `${cfg.spec==='psicologo'?(cfg.gender==='F'?'Psic. ':'Psic. '):cfg.gender==='F'?'Dra. ':'Dr. '}${cfg.name.trim()||'Nome Sobrenome'}`}
+function specLabel(){const s=SPECS[cfg.spec];return cfg.spec==='psicologo'?(cfg.gender==='F'?'Psicóloga':'Psicólogo'):s.l}
+function lum(h){const n=parseInt(h.slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(n>>16)+.7152*f(n>>8&255)+.0722*f(n&255)}
+function paint(){
+  document.documentElement.style.setProperty('--c',cfg.color);
+  document.documentElement.style.setProperty('--on',lum(cfg.color)>.5?'#111':'#fff');
+  const s=SPECS[cfg.spec];
+  $('#hName').textContent=who();
+  $('#hSub').textContent=`${specLabel()} · responde agora`;
+  const av=$('#av');av.innerHTML='';
+  if(cfg.logo){const i=new Image();i.src=cfg.logo;i.alt='';av.append(i)}
+  else av.textContent=(cfg.name.trim()||'N S').split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  $('#logoPrev').hidden=$('#logoRm').hidden=!cfg.logo;
+  if(cfg.logo)$('#logoPrev').src=cfg.logo;
+  document.title=`${who()} – Agendamento`;
+  document.querySelectorAll('#sw button').forEach(b=>b.classList.toggle('on',b.dataset.c===cfg.color));
+}
+
+/* ---------- motor da conversa ---------- */
+const M=$('#msgs');let run=0;
+const bottom=()=>{M.scrollTop=M.scrollHeight};
+function add(cls,html){const d=document.createElement('div');d.className=cls;d.innerHTML=html;M.append(d);bottom();return d}
+async function say(html,fast){
+  const my=run;
+  if(!fast){const t=add('b t','<i></i><i></i><i></i>');await sleep(550);t.remove()}
+  if(my!==run)return new Promise(()=>{});
+  add('b',html);
+}
+function pick(opts,cls=''){ // opts: [{label,v,off}]
+  const my=run;
+  return new Promise(res=>{
+    const w=add('ch '+cls,'');
+    opts.forEach(o=>{const b=document.createElement('button');b.textContent=o.label;b.disabled=!!o.off;
+      b.onclick=()=>{if(my!==run)return;w.remove();add('b u',esc(o.label));res(o.v)};w.append(b)});
+  });
+}
+function ask(ph,type='text'){
+  const my=run,f=$('#ft'),i=$('#inp');
+  f.classList.add('show');i.value='';i.placeholder=ph;i.type=type;i.focus({preventScroll:true});
+  return new Promise(res=>{f.onsubmit=e=>{e.preventDefault();const v=i.value.trim();if(!v||my!==run)return;
+    f.classList.remove('show');add('b u',esc(v));res(v)}});
+}
+
+/* datas e horários */
+function days(){const out=[],d=new Date();d.setHours(0,0,0,0);
+  while(out.length<6){d.setDate(d.getDate()+1);if(d.getDay()!==0)out.push(new Date(d))}return out}
+const fmtD=d=>d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'}).replace('.','');
+const fmtFull=d=>d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+const TIMES=['08:30','09:30','10:30','11:30','14:00','15:00','16:00','17:00'];
+function busy(d,i){return ((d.getDate()*7+i*13+d.getMonth())%5)===0}
+async function chooseSlot(){
+  const d=await pick(days().map(x=>({label:fmtD(x),v:x})),'grid');
+  await say(`Ótimo! Horários livres para ${fmtFull(d)}:`);
+  const t=await pick(TIMES.map((h,i)=>({label:h,v:h,off:busy(d,i)})),'grid');
+  return {d,t};
+}
+function wa(msg){const n=cfg.whats.replace(/\D/g,'');return n?`https://wa.me/${n.length<=11?'55'+n:n}?text=${encodeURIComponent(msg)}`:'#'}
+function confirmCard(title,rows,msg){
+  const dl=rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('');
+  const href=wa(msg),demo=href==='#';
+  add('card',`<h3>${esc(title)}</h3><dl>${dl}</dl><a class="cta" href="${href}" ${demo?'onclick="alert(\'Demonstração: informe o WhatsApp no painel para o botão abrir a conversa.\');return false"':'target="_blank" rel="noopener"'}>Confirmar pelo WhatsApp</a>`);
+}
+
+/* fluxos */
+async function fConsulta(){
+  const s=SPECS[cfg.spec];
+  await say(`Perfeito! Qual ${s.n==='sessão'?'tipo de sessão':'o motivo'} você procura?`);
+  const svc=await pick(s.svc.map(x=>({label:x,v:x})));
+  await say('Qual dia fica melhor para você?');
+  const {d,t}=await chooseSlot();
+  await say('Para finalizar, qual é o seu nome?');
+  const nome=await ask('Seu nome completo');
+  await say(`Prontinho, ${esc(nome.split(' ')[0])}! Confira sua solicitação:`);
+  const dia=fmtFull(d);
+  confirmCard(`${s.e} Solicitação de ${s.n}`,[['Paciente',nome],['Motivo',svc],['Dia',dia],['Horário',t]],
+    `Olá! Sou ${nome} e gostaria de agendar: ${svc}, ${dia} às ${t}.`);
+  await say('Toque no botão para enviar ao consultório e garantir seu horário. 💚');
+}
+async function fRetorno(){
+  const s=SPECS[cfg.spec];
+  await say('Que bom ter você de volta! Qual é o seu nome?');
+  const nome=await ask('Seu nome completo');
+  await say(`${esc(nome.split(' ')[0])}, quando foi a sua última ${s.n}?`);
+  const quando=await pick([{label:'Há menos de 30 dias',v:'há menos de 30 dias'},{label:'1 a 3 meses',v:'há 1 a 3 meses'},{label:'Mais de 3 meses',v:'há mais de 3 meses'}]);
+  await say('Escolha o dia do retorno:');
+  const {d,t}=await chooseSlot();
+  const dia=fmtFull(d);
+  await say('Tudo certo! Confira abaixo:');
+  confirmCard('🔁 Solicitação de retorno',[['Paciente',nome],['Última '+s.n,quando],['Dia',dia],['Horário',t]],
+    `Olá! Sou ${nome} e gostaria de agendar meu retorno (última ${s.n} ${quando}): ${dia} às ${t}.`);
+  await say('Toque no botão para confirmar com o consultório. ✅');
+}
+async function fDuvidas(){
+  const s=SPECS[cfg.spec];
+  for(;;){
+    await say('Sobre o que você quer saber?');
+    const v=await pick([...s.faq.map(([q,a])=>({label:q,v:a})),{label:'Falar com a equipe',v:'wa'},{label:'← Voltar',v:'back'}]);
+    if(v==='back')return;
+    if(v==='wa'){
+      await say('Claro! Toque abaixo para conversar direto com a equipe.');
+      add('card',`<a class="cta" ${wa('Olá! Tenho uma dúvida.')==='#'?'href="#" onclick="alert(\'Demonstração: informe o WhatsApp no painel.\');return false"':`href="${wa('Olá! Tenho uma dúvida.')}" target="_blank" rel="noopener"`}>Abrir WhatsApp</a>`);
+      return;
+    }
+    await say(esc(v));
+  }
+}
+async function main(){
+  const my=++run;M.innerHTML='';$('#ft').classList.remove('show');
+  const s=SPECS[cfg.spec];
+  await say(`Olá! 👋 Eu sou a assistente virtual ${cfg.gender==='F'?'da':'do'} ${esc(who())}.\n${s.tag}.`,true);
+  for(;;){
+    const opts=[];
+    if(cfg.consulta)opts.push({label:`📅 Agendar ${s.n}`,v:fConsulta});
+    if(cfg.retorno)opts.push({label:'🔁 Agendar retorno',v:fRetorno});
+    if(cfg.duvidas)opts.push({label:'💬 Tirar dúvidas',v:fDuvidas});
+    if(!opts.length){await say('Ative ao menos uma opção no painel.',true);return}
+    await say('Como posso te ajudar hoje?');
+    const f=await pick(opts);
+    await f();
+    await say('Posso ajudar em mais alguma coisa?');
+  }
+}
+
+/* ---------- painel ---------- */
+const specSel=$('#spec');
+for(const[k,v]of Object.entries(SPECS))specSel.add(new Option(`${v.e} ${v.l}`,k));
+$('#sw').innerHTML=COLORS.map(c=>`<button data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join('');
+function sync(){
+  $('#name').value=cfg.name;$('#gender').value=cfg.gender;specSel.value=cfg.spec;$('#whats').value=cfg.whats;
+  $('#color').value=cfg.color;
+  for(const o of['duvidas','consulta','retorno'])$('#o_'+o).checked=cfg[o];
+}
+let t;const restart=()=>{clearTimeout(t);t=setTimeout(main,350)};
+function set(k,v,rs=true){cfg[k]=v;save();paint();if(rs)restart()}
+$('#name').oninput=e=>set('name',e.target.value);
+$('#gender').onchange=e=>set('gender',e.target.value);
+specSel.onchange=e=>set('spec',e.target.value);
+$('#whats').oninput=e=>set('whats',e.target.value,false);
+$('#color').oninput=e=>{set('color',e.target.value,false)};
+$('#sw').onclick=e=>{const c=e.target.dataset.c;if(c){$('#color').value=c;set('color',c,false)}};
+for(const o of['duvidas','consulta','retorno'])$('#o_'+o).onchange=e=>set(o,e.target.checked);
+$('#restart').onclick=main;
+$('#logoRm').onclick=()=>{$('#logo').value='';set('logo','',false)};
+const msg=t=>{$('#logoMsg').textContent=t};
+function useImg(src){const img=new Image();
+  img.onload=()=>{try{const S=256,k=Math.min(1,S/Math.max(img.width,img.height)),c=document.createElement('canvas');
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    set('logo',c.toDataURL('image/png'),false)}catch(e){set('logo',src,false)}msg('✓ Logo aplicado')};
+  img.onerror=()=>msg('Não consegui abrir essa imagem. Tente outra.');
+  img.src=src}
+function readFile(f){if(!f)return;msg('Carregando…');const r=new FileReader();r.onload=()=>useImg(r.result);r.onerror=()=>msg('Erro ao ler o arquivo.');r.readAsDataURL(f)}
+function fromInput(e){readFile(e.target.files[0]);e.target.value=''}
+$('#logo').onchange=fromInput;$('#logo2').onchange=fromInput;
+$('#logoGo').onclick=()=>{const u=$('#logoUrl').value.trim();if(u){msg('Carregando…');useImg(u)}};
+document.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it)readFile(it.getAsFile())});
+$('#present').onclick=()=>{document.body.classList.add('pres');document.body.classList.remove('open')};
+$('#fab').onclick=()=>{
+  if(document.body.classList.contains('pres')){document.body.classList.remove('pres');document.body.classList.add('open')}
+  else document.body.classList.toggle('open');
+};
+// no celular, "Apresentar" fecha o painel; fab reabre
+sync();paint();main();
+</script>
+</body>
+</html>

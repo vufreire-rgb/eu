@@ -3,6 +3,7 @@ name: Publicar no GitHub Pages
 # Publica, em um único site:
 #   /          -> apresentação Draw My Life (index.html, audio/)
 #   /gabinete/ -> protótipo Gabinete Digital (Next.js exportado como estático)
+#   /agenda/   -> Agendador de link na bio (demonstração)
 on:
   push:
     branches: [main, ccr-1b38554c-6juspr]
@@ -40,6 +41,7 @@ jobs:
           cp index.html _site/
           [ -d audio ] && cp -r audio _site/audio
           cp -r gabinete-digital/out _site/gabinete
+          cp -r agenda _site/agenda
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
